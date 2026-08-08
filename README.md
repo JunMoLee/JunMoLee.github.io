@@ -47,6 +47,33 @@ Each publication in `data/publications.json` supports: `year`, `venue`,
 substring is auto-bolded), `vol` (optional, e.g. page range), and `tags`
 (array of small badges like "Nominated — ...", "Invited", "Equal contribution").
 
+## Editing the prose text (hero / about / research narrative)
+
+This copy lives directly in `index.html` as plain readable HTML, not in a
+`data/*.json` file — the fastest way to find the exact spot to edit is to
+**search for the words you see on the page**, not to hunt through the file
+top to bottom:
+
+1. Open `http://localhost:8080/` (or the live site) and select/copy the exact
+   phrase you want to change — e.g. `Process-to-system co-optimization`.
+2. In your editor, use **Find in Files** across the project folder (VS Code:
+   `Ctrl+Shift+F` / `Cmd+Shift+F`; Notepad++: `Ctrl+Shift+F`) and paste that
+   phrase in. It'll jump straight to the matching line in `index.html`.
+3. Edit the text between the HTML tags, save, refresh the local preview to
+   confirm, then `git add -A && git commit && git push` as usual.
+
+Section boundaries are marked with `<!-- ===== NAME ===== -->` comments
+(`HERO`, `ABOUT`, `RESEARCH`, `PUBLICATIONS`, etc.) if you want to browse
+section-by-section instead.
+
+**Two exceptions** — text that isn't visible on the page itself, so you can't
+select it to search for it. Both are near the very top of `index.html`:
+- The browser-tab title and search-preview text: the `<title>` tag and the
+  `<meta name="description" ...>` tag.
+- Image `alt` text (screen-reader-only descriptions) and `<figcaption>`
+  captions on the research figures — these sit right next to each `<img>` in
+  the Research section, worth updating once you drop in a real figure.
+
 ## Replacing the placeholder research figures
 
 No real device photos, micrographs, or figures were available in the source
