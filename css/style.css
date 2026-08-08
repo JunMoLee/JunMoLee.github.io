@@ -502,7 +502,7 @@ body.local-editing .story-content {
 .stage-rail li a {
   display: block;
   padding: var(--sp-4) var(--sp-3);
-  color: var(--ink-faint);
+  color: var(--ink-soft);
   transition: color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
 }
 .stage-rail li a:hover, .stage-rail li a:focus-visible {
@@ -511,13 +511,12 @@ body.local-editing .story-content {
 }
 .stage-rail li .num {
   display: block;
-  color: var(--line-strong);
+  color: var(--accent);
+  opacity: 0.75;
   margin-bottom: var(--sp-2);
-  transition: color var(--dur-fast) var(--ease);
+  transition: opacity var(--dur-fast) var(--ease);
 }
-.stage-rail li a:hover .num { color: var(--accent); }
-.stage-rail li.is-active a { color: var(--ink); }
-.stage-rail li.is-active .num { color: var(--accent); }
+.stage-rail li a:hover .num { opacity: 1; }
 
 .research-story {
   display: grid;

@@ -83,11 +83,33 @@
               font:inherit; cursor:pointer; background:#A8551E; color:#fff;
               border:1px solid #A8551E; padding:4px 8px; opacity:0.4;">Save</button>
           </div>
+          <div id="formatToolbar" style="display:flex; align-items:center; gap:4px; margin-top:6px;">
+            <button type="button" data-cmd="bold" title="Bold" style="
+              font:inherit; font-weight:700; cursor:pointer; background:#2C2F35; color:#ECE8DD;
+              border:1px solid #3A3D43; width:26px; height:26px;">B</button>
+            <button type="button" data-cmd="italic" title="Italic" style="
+              font:inherit; font-style:italic; cursor:pointer; background:#2C2F35; color:#ECE8DD;
+              border:1px solid #3A3D43; width:26px; height:26px;">I</button>
+            <button type="button" data-cmd="underline" title="Underline" style="
+              font:inherit; text-decoration:underline; cursor:pointer; background:#2C2F35; color:#ECE8DD;
+              border:1px solid #3A3D43; width:26px; height:26px;">U</button>
+            <input id="formatColor" type="color" title="Text color" value="#A8551E" style="
+              width:26px; height:26px; padding:0; background:#2C2F35; border:1px solid #3A3D43; cursor:pointer;">
+            <button type="button" id="formatLinkBtn" title="Insert / edit link" style="
+              font:inherit; font-size:12px; cursor:pointer; background:#2C2F35; color:#ECE8DD;
+              border:1px solid #3A3D43; width:26px; height:26px;">🔗</button>
+            <button type="button" data-cmd="removeFormat" title="Clear formatting" style="
+              font:inherit; font-size:10px; cursor:pointer; background:#2C2F35; color:#ECE8DD;
+              border:1px solid #3A3D43; padding:0 6px; height:26px;">Clear</button>
+          </div>
           <div style="opacity:0.45; font-size:10.5px; margin-top:4px;">
-            Every heading/paragraph on the page becomes editable. Drag the
-            bottom-right corner of figure boxes or text blocks to resize —
-            resizing sets a fixed size that won't shrink for small screens,
-            so check mobile after resizing anything.
+            Every heading/paragraph on the page becomes editable. Select text
+            and use the toolbar above to format it — 🔗 turns the selection
+            into a link to any URL (click into an existing link and hit 🔗
+            again to edit or remove it). Drag the bottom-right corner of
+            figure boxes or text blocks to resize — resizing sets a fixed
+            size that won't shrink for small screens, so check mobile after
+            resizing anything.
           </div>
         </div>
 
@@ -255,6 +277,112 @@
     e.target.classList.add("is-dirty");
     dirty = true;
     setSaveEnabled(true);
+  }
+
+  // --- Formatting toolbar (bold/italic/underline/color) --------------------
+  // Tracks the last text selection made *inside an editable leaf* so toolbar
+  // clicks (which momentarily steal focus from the page) still apply to the
+  // right place — the standard save/restore-Range trick for contentEditable.
+  let savedRange = null;
+
+  function trackSelection() {
+    // Tracks both real selections (for bold/italic/etc) and a plain cursor
+    // position (needed so clicking into an existing link, with nothing
+    // selected, still lets the Link button find and edit it).
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0) return;
+    const range = sel.getRangeAt(0);
+    const node = range.commonAncestorContainer;
+    const el = node.nodeType === 1 ? node : node.parentElement;
+    if (el && el.closest(".editor-leaf")) {
+      savedRange = range.cloneRange();
+    }
+  }
+
+  function markLeafDirtyFromSelection() {
+    const sel = window.getSelection();
+    savedRange = sel.rangeCount ? sel.getRangeAt(0).cloneRange() : null;
+    const node = savedRange && savedRange.commonAncestorContainer;
+    const el = node && (node.nodeType === 1 ? node : node.parentElement);
+    const target = el && el.closest(".editor-leaf");
+    if (target) {
+      target.classList.add("is-dirty");
+      dirty = true;
+      setSaveEnabled(true);
+    }
+  }
+
+  function applyFormat(cmd, value) {
+    if (!savedRange || savedRange.collapsed) {
+      setStatus("Select some text first, then click a format button.", true);
+      return;
+    }
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(savedRange);
+    if (cmd === "foreColor") {
+      document.execCommand("styleWithCSS", false, true);
+    }
+    document.execCommand(cmd, false, value);
+    if (cmd === "foreColor") {
+      document.execCommand("styleWithCSS", false, false);
+    }
+    markLeafDirtyFromSelection();
+  }
+
+  function findEnclosingLink(range) {
+    if (!range) return null;
+    const node = range.commonAncestorContainer;
+    const el = node.nodeType === 1 ? node : node.parentElement;
+    return el ? el.closest(".editor-leaf a") : null;
+  }
+
+  function insertOrEditLink() {
+    const sel = window.getSelection();
+    let range = savedRange;
+    let existingLink = findEnclosingLink(range);
+
+    if (!range || (!existingLink && range.collapsed)) {
+      setStatus("Select some text first, then click 🔗.", true);
+      return;
+    }
+
+    const currentHref = existingLink ? existingLink.getAttribute("href") : "";
+    const input = window.prompt(
+      existingLink ? "Edit link URL (leave blank to remove the link):" : "Link URL:",
+      currentHref || "https://"
+    );
+    if (input === null) return; // cancelled
+
+    const url = input.trim();
+
+    // If editing an existing link via just a cursor (no real selection),
+    // select its full text first so unlink/createLink applies to the whole thing.
+    if (existingLink && range.collapsed) {
+      const full = document.createRange();
+      full.selectNodeContents(existingLink);
+      range = full;
+    }
+    sel.removeAllRanges();
+    sel.addRange(range);
+
+    if (url === "") {
+      document.execCommand("unlink");
+    } else {
+      document.execCommand("createLink", false, url);
+      const node = sel.rangeCount ? sel.getRangeAt(0).commonAncestorContainer : null;
+      const el = node && (node.nodeType === 1 ? node : node.parentElement);
+      const newLink = el && el.closest(".editor-leaf a");
+      const isExternal = /^https?:\/\//i.test(url);
+      if (newLink && isExternal) {
+        newLink.target = "_blank";
+        newLink.rel = "noopener";
+      } else if (newLink) {
+        newLink.removeAttribute("target");
+        newLink.removeAttribute("rel");
+      }
+    }
+    markLeafDirtyFromSelection();
   }
 
   function stripClass(scope, selector, className) {
@@ -617,6 +745,15 @@
       e.preventDefault();
       setRawMode(!rawMode);
     });
+
+    document.addEventListener("selectionchange", trackSelection);
+    panel.querySelectorAll("#formatToolbar button[data-cmd]").forEach((btn) => {
+      btn.addEventListener("click", () => applyFormat(btn.getAttribute("data-cmd")));
+    });
+    panel.querySelector("#formatColor").addEventListener("input", (e) => {
+      applyFormat("foreColor", e.target.value);
+    });
+    panel.querySelector("#formatLinkBtn").addEventListener("click", insertOrEditLink);
 
     const collapseBtn = panel.querySelector("#editCollapseBtn");
     const body = panel.querySelector("#editorBody");
