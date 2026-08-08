@@ -89,7 +89,7 @@
               font:inherit; cursor:pointer; background:#A8551E; color:#fff;
               border:1px solid #A8551E; padding:4px 8px; opacity:0.4;">Save</button>
           </div>
-          <div id="formatToolbar" style="display:flex; align-items:center; gap:4px; margin-top:6px;">
+          <div id="formatToolbar" style="display:flex; align-items:center; gap:4px; margin-top:6px; flex-wrap:wrap;">
             <button type="button" data-cmd="bold" title="Bold" style="
               font:inherit; font-weight:700; cursor:pointer; background:#2C2F35; color:#ECE8DD;
               border:1px solid #3A3D43; width:26px; height:26px;">B</button>
@@ -99,7 +99,27 @@
             <button type="button" data-cmd="underline" title="Underline" style="
               font:inherit; text-decoration:underline; cursor:pointer; background:#2C2F35; color:#ECE8DD;
               border:1px solid #3A3D43; width:26px; height:26px;">U</button>
+            <button type="button" data-cmd="strikeThrough" title="Strikethrough" style="
+              font:inherit; text-decoration:line-through; cursor:pointer; background:#2C2F35; color:#ECE8DD;
+              border:1px solid #3A3D43; width:26px; height:26px;">S</button>
+            <button type="button" data-cmd="subscript" title="Subscript (e.g. In₂O₃)" style="
+              font:inherit; cursor:pointer; background:#2C2F35; color:#ECE8DD;
+              border:1px solid #3A3D43; width:26px; height:26px;">X₂</button>
+            <button type="button" data-cmd="superscript" title="Superscript (e.g. cm²)" style="
+              font:inherit; cursor:pointer; background:#2C2F35; color:#ECE8DD;
+              border:1px solid #3A3D43; width:26px; height:26px;">X²</button>
+            <select id="formatFontSize" title="Font size" style="
+              font:inherit; font-size:11px; cursor:pointer; background:#2C2F35; color:#ECE8DD;
+              border:1px solid #3A3D43; height:26px;">
+              <option value="">Size…</option>
+              <option value="2">Small</option>
+              <option value="3">Normal</option>
+              <option value="5">Large</option>
+              <option value="6">X-Large</option>
+            </select>
             <input id="formatColor" type="color" title="Text color" value="#A8551E" style="
+              width:26px; height:26px; padding:0; background:#2C2F35; border:1px solid #3A3D43; cursor:pointer;">
+            <input id="formatHighlight" type="color" title="Highlight color" value="#F2D9A8" style="
               width:26px; height:26px; padding:0; background:#2C2F35; border:1px solid #3A3D43; cursor:pointer;">
             <button type="button" id="formatLinkBtn" title="Insert / edit link" style="
               font:inherit; font-size:12px; cursor:pointer; background:#2C2F35; color:#ECE8DD;
@@ -110,12 +130,13 @@
           </div>
           <div style="opacity:0.45; font-size:10.5px; margin-top:4px;">
             Every heading/paragraph on the page becomes editable. Select text
-            and use the toolbar above to format it — 🔗 turns the selection
-            into a link to any URL (click into an existing link and hit 🔗
-            again to edit or remove it). Drag the bottom-right corner of
-            figure boxes or text blocks to resize — resizing sets a fixed
-            size that won't shrink for small screens, so check mobile after
-            resizing anything.
+            and use the toolbar above to format it — X₂/X² apply sub/superscript
+            (e.g. chemical formulas), the second color swatch highlights text,
+            and 🔗 turns the selection into a link to any URL (click into an
+            existing link and hit 🔗 again to edit or remove it). Drag the
+            bottom-right corner of figure boxes or text blocks to resize —
+            resizing sets a fixed size that won't shrink for small screens, so
+            check mobile after resizing anything.
           </div>
         </div>
 
@@ -230,6 +251,16 @@
         if (DYNAMIC_IDS.includes(child.id)) return;
         if (child.id === "localEditor") return;
         if (child.textContent.trim() === "") return; // decorative/empty, nothing to edit
+        // Explicitly-authored prose blocks (data-edit="...") are always a
+        // single leaf, however much rich-text markup (links, colored spans,
+        // sub/superscript) ends up nested inside them — otherwise adding a
+        // link or highlight to part of a paragraph would fragment it and
+        // strand the surrounding plain text outside any editable leaf.
+        if (child.hasAttribute("data-edit")) {
+          leaves.push(child);
+          foundInside = true;
+          return;
+        }
         if (isPassthroughOnly(child)) {
           leaves.push(child);
           foundInside = true;
@@ -318,6 +349,8 @@
     }
   }
 
+  const STYLE_WITH_CSS_CMDS = new Set(["foreColor", "hiliteColor", "fontSize"]);
+
   function applyFormat(cmd, value) {
     if (!savedRange || savedRange.collapsed) {
       setStatus("Select some text first, then click a format button.", true);
@@ -326,11 +359,12 @@
     const sel = window.getSelection();
     sel.removeAllRanges();
     sel.addRange(savedRange);
-    if (cmd === "foreColor") {
+    const useStyleWithCSS = STYLE_WITH_CSS_CMDS.has(cmd);
+    if (useStyleWithCSS) {
       document.execCommand("styleWithCSS", false, true);
     }
     document.execCommand(cmd, false, value);
-    if (cmd === "foreColor") {
+    if (useStyleWithCSS) {
       document.execCommand("styleWithCSS", false, false);
     }
     markLeafDirtyFromSelection();
@@ -758,6 +792,14 @@
     });
     panel.querySelector("#formatColor").addEventListener("input", (e) => {
       applyFormat("foreColor", e.target.value);
+    });
+    panel.querySelector("#formatHighlight").addEventListener("input", (e) => {
+      applyFormat("hiliteColor", e.target.value);
+    });
+    panel.querySelector("#formatFontSize").addEventListener("change", (e) => {
+      if (!e.target.value) return;
+      applyFormat("fontSize", e.target.value);
+      e.target.value = "";
     });
     panel.querySelector("#formatLinkBtn").addEventListener("click", insertOrEditLink);
 
