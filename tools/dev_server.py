@@ -8,7 +8,7 @@ plain content-serving behavior is otherwise identical to
 `python -m http.server`.
 
 Usage:
-    python tools/dev_server.py            # serves on http://localhost:8080/
+    python tools/dev_server.py            # serves on http://localhost:8090/
     python tools/dev_server.py 5000       # custom port
 
 Endpoints (used by js/edit-mode.js, not meant to be called directly):
@@ -197,7 +197,7 @@ class ExclusiveHTTPServer(http.server.HTTPServer):
 
 
 def main():
-    port = int(sys.argv[1]) if len(sys.argv) > 1 else 8080
+    port = int(sys.argv[1]) if len(sys.argv) > 1 else 8090
     handler = functools.partial(Handler, directory=str(PROJECT_ROOT))
     try:
         httpd = ExclusiveHTTPServer(("127.0.0.1", port), handler)
@@ -205,6 +205,11 @@ def main():
         if e.errno in (48, 98, 10048):  # macOS, Linux, Windows "address in use"
             print(f"Port {port} is already in use — the server is probably already running.")
             print(f"Just open http://localhost:{port}/?edit=1 in your browser.")
+            return
+        if e.errno == 10013:  # Windows WSAEACCES — another program has claimed this port
+            print(f"Port {port} is blocked by another program on this machine (not this project).")
+            print(f"Try a different port: python tools/dev_server.py {port + 1}")
+            print("(and update the port in \"Edit Website.bat\" to match if you want the shortcut to use it)")
             return
         raise
 
