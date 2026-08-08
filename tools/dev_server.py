@@ -12,9 +12,10 @@ Usage:
     python tools/dev_server.py 5000       # custom port
 
 Endpoints (used by js/edit-mode.js, not meant to be called directly):
-    POST /__save__       Replace the whole editable region of index.html.
-    POST /__save-json__  Overwrite one whitelisted data/*.json file.
-    POST /__publish__    git add -A && git commit && git push, in this repo.
+    POST /__save__          Replace the whole editable region of index.html.
+    POST /__save-json__     Overwrite one whitelisted data/*.json file.
+    POST /__upload-image__  Write a dropped/picked figure image to disk.
+    POST /__publish__       git add -A && git commit && git push, in this repo.
 
 Safety:
     - Binds to 127.0.0.1 only — never reachable from your network, let alone
@@ -26,6 +27,9 @@ Safety:
       writing something wrong.
     - /__save-json__ only writes to the exact filenames listed in DATA_FILES,
       inside data/ — no arbitrary paths, and the content must parse as JSON.
+    - /__upload-image__ only writes inside assets/images/ (path traversal is
+      rejected), only for a small allowlist of image extensions, and only up
+      to MAX_IMAGE_BYTES.
     - /__publish__ runs plain git commands in this project's working tree —
       the same thing you'd type yourself. It pushes to whatever remote your
       local git is already configured with (`git remote -v`), using your
@@ -40,10 +44,15 @@ import re
 import subprocess
 import sys
 from pathlib import Path
+from urllib.parse import urlsplit, parse_qs, unquote
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 INDEX_HTML = PROJECT_ROOT / "index.html"
 DATA_DIR = PROJECT_ROOT / "data"
+IMAGES_DIR = PROJECT_ROOT / "assets" / "images"
+
+ALLOWED_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".svg"}
+MAX_IMAGE_BYTES = 15 * 1024 * 1024
 
 REGION_PATTERN = re.compile(
     r"(<!-- EDITABLE:START -->)(.*?)(<!-- EDITABLE:END -->)", re.DOTALL
@@ -89,12 +98,15 @@ def run_git(*args):
 
 class Handler(http.server.SimpleHTTPRequestHandler):
     def do_POST(self):
-        if self.path == "/__save__":
+        parsed = urlsplit(self.path)
+        if parsed.path == "/__save__":
             self._handle_save()
-        elif self.path == "/__save-json__":
+        elif parsed.path == "/__save-json__":
             self._handle_save_json()
-        elif self.path == "/__publish__":
+        elif parsed.path == "/__publish__":
             self._handle_publish()
+        elif parsed.path == "/__upload-image__":
+            self._handle_upload_image(parse_qs(parsed.query))
         else:
             self.send_error(404, "Unknown endpoint")
 
@@ -145,6 +157,42 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         target.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         print(f"Saved data/{filename}")
         self._json_response(200, {"ok": True})
+
+    def _handle_upload_image(self, query):
+        raw_path = (query.get("path") or [""])[0]
+        target_path = unquote(raw_path).strip().lstrip("/")
+
+        if not target_path:
+            self._json_response(400, {"error": "Missing target path"})
+            return
+        if ".." in Path(target_path).parts:
+            self._json_response(400, {"error": "Invalid path"})
+            return
+
+        target = (PROJECT_ROOT / target_path).resolve()
+        try:
+            target.relative_to(IMAGES_DIR.resolve())
+        except ValueError:
+            self._json_response(400, {"error": "Images can only be saved under assets/images/"})
+            return
+
+        if target.suffix.lower() not in ALLOWED_IMAGE_EXTENSIONS:
+            self._json_response(400, {"error": f"Unsupported image type: {target.suffix}"})
+            return
+
+        length = int(self.headers.get("Content-Length", 0))
+        if length <= 0:
+            self._json_response(400, {"error": "Empty upload"})
+            return
+        if length > MAX_IMAGE_BYTES:
+            self._json_response(413, {"error": f"Image too large (max {MAX_IMAGE_BYTES // (1024 * 1024)} MB)"})
+            return
+
+        data = self.rfile.read(length)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(data)
+        print(f"Saved image to {target.relative_to(PROJECT_ROOT)}")
+        self._json_response(200, {"ok": True, "path": target_path})
 
     def _handle_publish(self):
         try:

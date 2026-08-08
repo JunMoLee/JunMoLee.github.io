@@ -455,6 +455,30 @@ button { font: inherit; background: none; border: none; cursor: pointer; color: 
 .figure-frame.has-image .figure-placeholder { display: none; }
 .figure-frame img.is-broken { display: none; }
 
+/* Click-or-drop image upload, active only while the local editor is
+   editing (see setupFigureUploads() in edit-mode.js). */
+body.local-editing .figure-frame { cursor: pointer; }
+body.local-editing .figure-frame::after {
+  content: "Click or drop an image to replace this figure";
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: var(--sp-2);
+  background: rgba(20, 18, 15, 0.72);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.02em;
+  text-align: center;
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease);
+  pointer-events: none;
+}
+body.local-editing .figure-frame:hover::after { opacity: 1; }
+body.local-editing .figure-frame.upload-hover {
+  outline: 2px dashed var(--accent);
+  outline-offset: -2px;
+}
+
 /* Drag-resize handles, active only while the local editor is in edit mode.
    Dragging writes an explicit inline width/height, which is a fixed size —
    it will no longer respond to smaller screens once saved, so resize the

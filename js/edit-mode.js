@@ -133,10 +133,12 @@
             and use the toolbar above to format it — X₂/X² apply sub/superscript
             (e.g. chemical formulas), the second color swatch highlights text,
             and 🔗 turns the selection into a link to any URL (click into an
-            existing link and hit 🔗 again to edit or remove it). Drag the
-            bottom-right corner of figure boxes or text blocks to resize —
-            resizing sets a fixed size that won't shrink for small screens, so
-            check mobile after resizing anything.
+            existing link and hit 🔗 again to edit or remove it). Click or
+            drag-and-drop an image onto any figure box to set/replace it —
+            the file is written to assets/images/ and committed like anything
+            else. Drag the bottom-right corner of figure boxes or text blocks
+            to resize — resizing sets a fixed size that won't shrink for
+            small screens, so check mobile after resizing anything.
           </div>
         </div>
 
@@ -250,6 +252,11 @@
       Array.from(node.children).forEach((child) => {
         if (DYNAMIC_IDS.includes(child.id)) return;
         if (child.id === "localEditor") return;
+        // Instructional placeholder shown until a real figure file exists —
+        // its filename label is decorative, not something to hand-edit, and
+        // it's exactly where a dropped image file should land (see
+        // setupFigureUploads()), not into a contentEditable text run.
+        if (child.classList.contains("figure-placeholder")) return;
         if (child.textContent.trim() === "") return; // decorative/empty, nothing to edit
         // Explicitly-authored prose blocks (data-edit="...") are always a
         // single leaf, however much rich-text markup (links, colored spans,
@@ -279,6 +286,69 @@
     }
     walk(root);
     return leaves;
+  }
+
+  // --- Figure image upload (drag & drop or click-to-pick) ------------------
+  // Figures reference a fixed path (the <img src>) that already exists in
+  // the HTML — dropping a file here writes real bytes to that exact path on
+  // disk via dev_server.py, instead of relying on the browser's native
+  // "insert as embedded base64 image" behavior, which silently drops the
+  // image into whatever contentEditable happens to be under the cursor.
+  async function uploadFigureImage(frame, img, file) {
+    if (!file.type || !file.type.startsWith("image/")) {
+      setStatus("Please drop an image file.", true);
+      return;
+    }
+    const targetPath = img.getAttribute("src").split("?")[0];
+    setStatus(`Uploading ${file.name}…`);
+    try {
+      const res = await fetch(`/__upload-image__?path=${encodeURIComponent(targetPath)}`, {
+        method: "POST",
+        headers: { "Content-Type": file.type },
+        body: file
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.ok) throw new Error(data.error || `Upload failed (${res.status})`);
+      img.classList.remove("is-broken");
+      frame.classList.add("has-image");
+      img.src = `${targetPath}?t=${Date.now()}`;
+      setStatus(`Saved ${targetPath.split("/").pop()} ✓`);
+    } catch (err) {
+      setStatus(`Upload failed: ${err.message}`, true);
+    }
+  }
+
+  function setupFigureUploads() {
+    document.querySelectorAll(".figure-frame").forEach((frame) => {
+      if (frame.dataset.uploadWired) return;
+      frame.dataset.uploadWired = "1";
+      const img = frame.querySelector("img");
+      if (!img) return;
+
+      frame.addEventListener("dragover", (e) => {
+        if (!editing) return;
+        e.preventDefault();
+        frame.classList.add("upload-hover");
+      });
+      frame.addEventListener("dragleave", () => frame.classList.remove("upload-hover"));
+      frame.addEventListener("drop", (e) => {
+        if (!editing) return;
+        e.preventDefault();
+        frame.classList.remove("upload-hover");
+        const file = e.dataTransfer.files && e.dataTransfer.files[0];
+        if (file) uploadFigureImage(frame, img, file);
+      });
+      frame.addEventListener("click", () => {
+        if (!editing) return;
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "image/*";
+        input.addEventListener("change", () => {
+          if (input.files && input.files[0]) uploadFigureImage(frame, img, input.files[0]);
+        });
+        input.click();
+      });
+    });
   }
 
   function toggleEditing() {
@@ -775,6 +845,7 @@
   document.addEventListener("DOMContentLoaded", () => {
     document.body.appendChild(panel);
     document.head.appendChild(style);
+    setupFigureUploads();
 
     panel.querySelector("#editToggleBtn").addEventListener("click", toggleEditing);
     panel.querySelector("#editSaveBtn").addEventListener("click", saveChanges);
