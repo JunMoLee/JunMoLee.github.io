@@ -105,30 +105,25 @@ or, with Node installed:
 npx serve .
 ```
 
-## Analytics
-
-Not wired up yet. [GoatCounter](https://www.goatcounter.com/) was chosen as
-the provider — private (login-only) traffic stats, no cookies, no personal
-data collected, no consent banner needed. An earlier site code was retired
-because it matched a personally-identifying username and would have been
-visible in public page source; the plan is a fresh, non-identifying site
-code before this gets wired back in.
-
-Once a new site is created (goatcounter.com → sign up, note the account
-name / site code, set "Viewable by" to "Just you"), add this immediately
-before `</body>` in `index.html`:
+Private (login-only) traffic stats via [GoatCounter](https://www.goatcounter.com/)
+— no cookies, no personal data collected, no consent banner needed. The
+tracking snippet is the last thing before `</body>` in `index.html`:
 
 ```html
-<script data-goatcounter="https://YOUR-CODE.goatcounter.com/count"
+<script data-goatcounter="https://semiconductorjunmolee.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
 ```
 
-Note: the site code itself is always visible in page source for any
-client-side analytics tool (that's how the tracking beacon works) — it just
-shouldn't be a value that identifies you personally. Loading the site locally
-during development also counts as a visit in the dashboard once this is set
-up — expected and harmless, but remove the script block while testing
-locally if you want a completely clean count.
+Dashboard (private, login required): https://semiconductorjunmolee.goatcounter.com/
+
+Note: the site code is always visible in page source for any client-side
+analytics tool (that's how the tracking beacon works) — an earlier code was
+retired because it happened to match a personally-identifying username; this
+one is just a variant of the name already shown everywhere else on the site,
+so it doesn't reveal anything new. Loading the site locally during
+development also counts as a visit in the dashboard — expected and harmless,
+but remove the script block while testing locally if you want a completely
+clean count.
 
 ## Deploying (when ready)
 
