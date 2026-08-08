@@ -40,9 +40,8 @@
     "venueShort": "T-VLSI",
     "title": "3-D Digital Compute-in-Memory Benchmark With A5 CFET Technology: An Extension to Lookup-Table-Based Design",
     "authors": "J. Lee, M. Shon, F. Waqar, S. Yu",
-    "tags": [
-      "Accepted"
-    ],
+    "tags": [],
+    "vol": "vol. 33, no. 7, pp. 1910–1919",
     "url": "https://ieeexplore.ieee.org/document/11008711/"
   },
   {
@@ -52,6 +51,7 @@
     "title": "BEOL-compatible non-volatile capacitive synapse with ALD W-doped In₂O₃ semiconductor layer",
     "authors": "J. Lee, C. Zhang, M. Shon, J. Read, S. Deng, O. Phadke, P. V. Ravindran, M. Tian, Y.-C. Luo, T.-H. Kim, A. I. Khan, S. Datta, S. Yu",
     "tags": [],
+    "vol": "pp. 1–4",
     "url": "https://ieeexplore.ieee.org/document/10873481/"
   },
   {
