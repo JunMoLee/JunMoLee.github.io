@@ -1,36 +1,36 @@
-# junmolee.gatech — personal research website
+# Junmo Lee — research website
 
-A static, dependency-free site (HTML/CSS/vanilla JS) for Junmo Lee's research
-identity: process → device → integration → circuit → system. No build step,
-no framework — edit files directly and refresh.
+Static site (HTML/CSS/vanilla JS) for Junmo Lee's research identity:
+process → device → integration → circuit → system. No build step, no
+framework — edit files directly and refresh.
+
+Live at: https://junmolee.github.io/
 
 ## Structure
 
 ```
-index.html            All page markup and section copy (hero, about, research
-                       storytelling, publications, experience, education,
-                       skills, awards, contact). The hero graphic and three
-                       research figures are drop-in image slots — see
-                       "Replacing the placeholder research figures" below.
-css/style.css          The entire design system: color tokens (light + dark),
-                       type scale, spacing scale, layout, components.
-js/main.js             Fetches the JSON files in data/ and renders publications,
-                       experience, education, skills, awards, and the link rows.
-                       Also handles nav scroll state, the mobile menu, and
-                       scroll-reveal animation.
-js/edit-mode.js         Local-only live text editor (see "Live in-browser
-                       editing" below). Inert everywhere except localhost.
-tools/dev_server.py     Local dev server used only for live editing — same as
-                       `python -m http.server` but can also save edits to disk.
-data/*.json             Editable content — see "Updating content" below.
-assets/cv/              The public, downloadable CV (phone-redacted — see below).
-assets/icons/favicon.svg  Site favicon (original mark, not a photo/logo).
-assets/images/          Empty — drop real figures/photos here (see below).
+index.html               Page markup and section copy (hero, about, research
+                          storytelling, publications, experience, education,
+                          skills, awards, contact).
+css/style.css             Design system: color tokens (light + dark), type
+                          scale, spacing scale, layout, components.
+js/main.js                Fetches the JSON files in data/ and renders
+                          publications, experience, education, skills,
+                          awards, and the link rows. Also handles nav scroll
+                          state, the mobile menu, and scroll-reveal animation.
+js/edit-mode.js            Local-only live text editor (see below). Inert
+                          everywhere except localhost.
+tools/dev_server.py        Local dev server for live editing — like
+                          `python -m http.server`, but can also save edits
+                          and publish to GitHub.
+data/*.json                Editable content — see "Updating content" below.
+assets/cv/                 The public, downloadable CV.
+assets/icons/favicon.svg   Site favicon.
+assets/images/             Research figures — see "Adding figures" below.
 ```
 
-There is no build tool. Opening `index.html` via `file://` will NOT work
-because the page `fetch()`s the JSON in `data/`, which requires a server (see
-"Running locally").
+Opening `index.html` via `file://` will not work, since the page `fetch()`s
+the JSON in `data/`, which requires a server — see "Running locally".
 
 ## Updating content
 
@@ -44,7 +44,7 @@ Everything list-like is data-driven, so most updates don't touch HTML/CSS:
 | Skills groups                | `data/skills.json` |
 | Awards / recognition        | `data/awards.json` |
 | Email, Scholar/LinkedIn/GitHub links, CV path | `data/site.json` |
-| Hero copy, About copy, Research narrative & diagrams | directly in `index.html` (these are prose/storytelling, not list data, so they're hand-authored) |
+| Hero copy, About copy, Research narrative | directly in `index.html`, or the live editor below |
 
 Each publication in `data/publications.json` supports: `year`, `venue`,
 `venueShort`, `title`, `authors` (plain text — any `"J. Lee"` or `"J. Lee*"`
@@ -53,70 +53,49 @@ substring is auto-bolded), `vol` (optional, e.g. page range), and `tags`
 
 ## Live in-browser editing (local only)
 
-The hero, about, and research/contact prose (16 text blocks total) can be
-edited directly on the page, with a real Save button that writes straight
-into `index.html`. This needs the write-capable dev server instead of the
-plain one:
+The hero, about, and research/contact prose (16 text blocks) can be edited
+directly on the page, with Save and Publish buttons.
 
 ```bash
 python tools/dev_server.py
 # then open http://localhost:8080/
 ```
 
-A small **"LOCAL EDITOR"** panel appears in the bottom-right corner —
-it only shows up on `localhost`/`127.0.0.1`; it does nothing at all on the
-real deployed site, so there's no risk of it ever appearing publicly.
+A **"LOCAL EDITOR"** panel appears in the bottom-right corner — only on
+`localhost`/`127.0.0.1`; it never appears on the deployed site.
 
 1. Click **Enable editing** — editable text gets a dashed outline.
-2. Click into any outlined text and type normally (Enter is disabled inside
-   these blocks on purpose, since they're meant to be single
-   headings/paragraphs — line breaks aren't needed here).
-3. Click **Save** — it writes the changes into `index.html` on disk and
-   confirms with "Saved ✓". Refresh the page to see the clean, saved version.
-4. Publish as usual: `git add -A && git commit -m "..." && git push`.
+2. Click into any outlined text and type normally.
+3. Click **Save** — writes the changes into `index.html` on disk.
+4. Click **Publish to GitHub** — commits and pushes everything currently
+   changed in the project (saved text edits, new figures dropped into
+   `assets/images/`, JSON edits, anything) straight to the live site. Type a
+   short commit message first, or leave the default.
 
-If Save ever fails, the panel shows why (most commonly: still running the
-plain `python -m http.server` instead of `tools/dev_server.py`, which can
-serve files but can't write them).
+Equivalent manual publish, if you'd rather do it yourself:
+```bash
+git add -A && git commit -m "..." && git push
+```
 
-**What this doesn't cover** — falls back to manual editing (see below):
-publication/experience/education/skills/award entries (those live in
-`data/*.json`), the small spec-strip/tag labels inside each research story,
-the browser-tab title and search-preview text, and image `alt`/`figcaption`
-text.
+**What the live editor covers**: the 16 main prose blocks. Publication /
+experience / education / skills / award entries live in `data/*.json`;
+edit those directly. The small spec-strip/tag labels inside each research
+story, the browser-tab title, the search-preview text, and image
+`alt`/`figcaption` text also need direct editing in `index.html`.
 
-## Editing everything else (manual)
+## Finding text to edit manually
 
-For anything the live editor doesn't cover, the fastest way to find the
-exact spot is to **search for the words you see on the page** rather than
-hunting through the file top to bottom:
+Select the exact phrase you see on the page, then use **Find in Files** in
+your editor (VS Code: `Ctrl+Shift+F`) across the project folder to jump
+straight to it in `index.html`, rather than scrolling through the file.
+Section boundaries are marked with `<!-- ===== NAME ===== -->` comments
+(`HERO`, `ABOUT`, `RESEARCH`, `PUBLICATIONS`, etc.).
 
-1. Select/copy the exact phrase you want to change from the rendered page.
-2. In your editor, use **Find in Files** across the project folder (VS Code:
-   `Ctrl+Shift+F` / `Cmd+Shift+F`; Notepad++: `Ctrl+Shift+F`) and paste it in
-   — jumps straight to the matching line.
-3. Edit, save, refresh the local preview to confirm, then
-   `git add -A && git commit && git push`.
+## Adding figures
 
-Section boundaries in `index.html` are marked with `<!-- ===== NAME ===== -->`
-comments (`HERO`, `ABOUT`, `RESEARCH`, `PUBLICATIONS`, etc.) if you'd rather
-browse section-by-section. The browser-tab title, search-preview text
-(`<title>`, `<meta name="description">`), and figure `alt`/`figcaption` text
-aren't visible on the page itself, so they can't be found by selecting text
-— they're all near the very top of `index.html` or right next to each `<img>`.
-
-## Replacing the placeholder research figures
-
-No real device photos, micrographs, or figures were available in the source
-materials (and an early schematic I sketched from general knowledge of the
-device stack turned out not to match the actual structure — not something to
-guess at). So instead of inline drawings, the hero and the three Research-section
-figures are **drop-in image slots**: each is a real `<img>` pointing at a
-filename in `assets/images/` that doesn't exist yet, wrapped in a frame that
-shows a "Figure pending" placeholder until that file shows up.
-
-**To add a figure, no HTML/CSS editing required** — just save an image with
-the exact expected filename into `assets/images/`:
+The hero graphic and the three Research-section figures are drop-in image
+slots. Save an image with the exact expected filename into `assets/images/`
+and it appears automatically — no HTML editing required:
 
 | Slot | Expected filename |
 |---|---|
@@ -125,32 +104,19 @@ the exact expected filename into `assets/images/`:
 | Research — M3D integration | `assets/images/fig-m3d-integration.jpg` |
 | Research — DTCO/STCO | `assets/images/fig-dtco-system.jpg` |
 
-JPG or PNG both work (the `<img>` tags don't care about extension case, but
-match the `.jpg` in the filenames above, or edit the `src` in `index.html` if
-you'd rather use `.png`). Aim for roughly 1600px on the long edge, compressed
-for web. As soon as the file loads successfully, the placeholder frame
-disappears and the real image fills it (16:10 aspect, `object-fit: cover` —
-crop/frame your source image with that in mind). Update the `<figcaption>`
-text and the `alt=""` attribute in `index.html` next to each `<img>` to
-describe the real figure once it's in place.
+JPG or PNG both work. Aim for roughly 1600px on the long edge, compressed
+for web (16:10 aspect, `object-fit: cover` — crop with that in mind). After
+adding a real figure, update the `<figcaption>` text and the image's
+`alt=""` attribute in `index.html` to describe it.
 
 ## Updating the CV
 
-`assets/cv/Junmo-Lee-CV.pdf` is a **phone-number-redacted** copy of the
-source CV, built for public distribution:
-- Page 1 (contact header) is flattened to an image with the phone number
-  painted out, so the digits aren't recoverable from the PDF's text layer.
-- Pages 2–4 are the original, untouched (fully selectable/searchable text).
-
-**When you update your CV:** regenerate this file from the new source and
-re-apply the same redaction (or manually cover the phone number) before
-replacing `assets/cv/Junmo-Lee-CV.pdf`. Don't drop a raw, unredacted CV into
-`assets/` — it's the one thing on this site that's public-facing but not
-meant to expose a personal phone number.
+`assets/cv/Junmo-Lee-CV.pdf` is the public copy, with the phone number
+redacted from the header (page 1 is a flattened image; pages 2–4 are
+regular searchable text). When replacing this file with an updated CV,
+apply the same redaction before publishing it here.
 
 ## Running locally
-
-Any static file server works for just previewing. From the project root:
 
 ```bash
 python -m http.server 8080
@@ -163,13 +129,14 @@ or, with Node installed:
 npx serve .
 ```
 
-To also use the **live in-browser editor** (see below), use
-`python tools/dev_server.py` instead — it serves the exact same content but
-can additionally save edits back to `index.html`.
+Use `python tools/dev_server.py` instead of either of the above if you want
+the live in-browser editor (see above).
+
+## Analytics
 
 Private (login-only) traffic stats via [GoatCounter](https://www.goatcounter.com/)
-— no cookies, no personal data collected, no consent banner needed. The
-tracking snippet is the last thing before `</body>` in `index.html`:
+— no cookies, no personal data collected, no consent banner needed. Tracking
+snippet is the last thing before `</body>` in `index.html`:
 
 ```html
 <script data-goatcounter="https://semiconductorjunmolee.goatcounter.com/count"
@@ -178,39 +145,8 @@ tracking snippet is the last thing before `</body>` in `index.html`:
 
 Dashboard (private, login required): https://semiconductorjunmolee.goatcounter.com/
 
-Note: the site code is always visible in page source for any client-side
-analytics tool (that's how the tracking beacon works) — an earlier code was
-retired because it happened to match a personally-identifying username; this
-one is just a variant of the name already shown everywhere else on the site,
-so it doesn't reveal anything new. Loading the site locally during
-development also counts as a visit in the dashboard — expected and harmless,
-but remove the script block while testing locally if you want a completely
-clean count.
+## Deploying
 
-## Deploying (when ready)
-
-This is plain static HTML/CSS/JS, so it's directly compatible with GitHub
-Pages, Netlify, Vercel, or any static host — no build step required. Before
-making the repository public:
-
-1. Confirm `.gitignore` is excluding the original (non-redacted) source CV
-   and `Google_Scholar.txt` — `git status` should never show them staged.
-2. Skim `git diff --stat` / `git status` once more right before the first
-   push, since it's easy to `git add -A` by accident.
-
-## Notes on what was deliberately left out
-
-- **Phone number**: present in the source CV, intentionally excluded from
-  every public-facing file on this site (see "Updating the CV" above).
-- **Professional photo**: none was available in the source materials, so the
-  hero was designed to work on typography and an original diagram rather than
-  a headshot. Add one later by placing it in `assets/images/` and adding an
-  `<img>` to the hero section if desired — the current layout doesn't require it.
-- **Military service (2018–2020)**: present on the source CV but omitted from
-  the public Experience section as not relevant to research positioning; nothing
-  sensitive, just an editorial curation choice for a technical audience.
-- **Research figures**: no publication-ready figures/micrographs were found in
-  the source directory, and a first attempt at an illustrative device schematic
-  didn't match the real structure — so rather than guess, the site now ships
-  with drop-in placeholder slots instead of invented diagrams (see "Replacing
-  the placeholder research figures" above).
+This is plain static HTML/CSS/JS — directly compatible with GitHub Pages,
+Netlify, Vercel, or any static host. Currently deployed via GitHub Pages
+from the `main` branch of this repo.

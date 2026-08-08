@@ -1,29 +1,39 @@
 #!/usr/bin/env python3
 """
-Local dev server with a save-to-disk endpoint for the in-browser live editor.
+Local dev server for the in-browser live editor (js/edit-mode.js).
 
-Unlike `python -m http.server`, this can actually write your edits back into
-index.html — that's the whole point of it. It only serves the "Save" button
-in js/edit-mode.js; the plain content-server behavior is identical to
-`python -m http.server` otherwise.
+Unlike `python -m http.server`, this can write your edits back into
+index.html and publish them to GitHub — that's the whole point of it. The
+plain content-serving behavior is otherwise identical to
+`python -m http.server`.
 
 Usage:
     python tools/dev_server.py            # serves on http://localhost:8080/
     python tools/dev_server.py 5000       # custom port
 
+Endpoints (used by js/edit-mode.js, not meant to be called directly):
+    POST /__save__      Write text edits into index.html.
+    POST /__publish__    git add -A && git commit && git push, in this repo.
+
 Safety:
     - Binds to 127.0.0.1 only — never reachable from your network, let alone
       the internet.
-    - Only the exact `data-edit="..."` markers listed below can be written;
-      anything else is rejected. Nothing outside index.html is ever touched.
-    - A save either fully succeeds (every requested marker found and
-      replaced) or fully fails and writes nothing — never a half-applied file.
+    - /__save__ only writes the exact `data-edit="..."` markers listed below;
+      anything else is rejected, and a save either fully succeeds (every
+      requested marker found and replaced) or fully fails and writes
+      nothing — never a half-applied file.
+    - /__publish__ runs plain git commands in this project's working tree —
+      the same thing you'd type yourself. It pushes to whatever remote your
+      local git is already configured with (`git remote -v`), using your
+      existing credentials. There is no separate auth step; anyone who can
+      reach this server (i.e., you, on your own machine) can publish.
 """
 
 import functools
 import http.server
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -86,12 +96,27 @@ def apply_edits(html, edits):
     return working, []
 
 
+def run_git(*args):
+    """Run a git command in the project root. Returns (returncode, stdout, stderr)."""
+    result = subprocess.run(
+        ["git", *args],
+        cwd=str(PROJECT_ROOT),
+        capture_output=True,
+        text=True,
+    )
+    return result.returncode, result.stdout.strip(), result.stderr.strip()
+
+
 class Handler(http.server.SimpleHTTPRequestHandler):
     def do_POST(self):
-        if self.path != "/__save__":
+        if self.path == "/__save__":
+            self._handle_save()
+        elif self.path == "/__publish__":
+            self._handle_publish()
+        else:
             self.send_error(404, "Unknown endpoint")
-            return
 
+    def _handle_save(self):
         try:
             length = int(self.headers.get("Content-Length", 0))
             body = json.loads(self.rfile.read(length) or b"{}")
@@ -110,6 +135,43 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         INDEX_HTML.write_text(updated, encoding="utf-8")
         print(f"Saved {len(edits)} edit(s) to index.html")
         self._json_response(200, {"ok": True, "count": len(edits)})
+
+    def _handle_publish(self):
+        try:
+            length = int(self.headers.get("Content-Length", 0))
+            body = json.loads(self.rfile.read(length) or b"{}") if length else {}
+        except (ValueError, json.JSONDecodeError):
+            body = {}
+
+        message = (body.get("message") or "").strip() or "Update site content"
+        log = []
+
+        code, out, err = run_git("add", "-A")
+        log.append(f"$ git add -A\n{out}{err}".strip())
+        if code != 0:
+            self._json_response(500, {"error": "git add failed", "log": "\n\n".join(log)})
+            return
+
+        code, out, err = run_git("diff", "--cached", "--quiet")
+        if code == 0:
+            # Nothing staged — nothing changed since the last commit.
+            self._json_response(200, {"ok": True, "nothing_to_publish": True, "log": "No changes to publish."})
+            return
+
+        code, out, err = run_git("commit", "-m", message)
+        log.append(f"$ git commit -m \"{message}\"\n{out}{err}".strip())
+        if code != 0:
+            self._json_response(500, {"error": "git commit failed", "log": "\n\n".join(log)})
+            return
+
+        code, out, err = run_git("push")
+        log.append(f"$ git push\n{out}{err}".strip())
+        if code != 0:
+            self._json_response(500, {"error": "git push failed (commit succeeded locally)", "log": "\n\n".join(log)})
+            return
+
+        print(f'Published: "{message}"')
+        self._json_response(200, {"ok": True, "log": "\n\n".join(log)})
 
     def _json_response(self, status, payload):
         body = json.dumps(payload).encode("utf-8")
