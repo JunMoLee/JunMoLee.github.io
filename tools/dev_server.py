@@ -55,6 +55,8 @@ DATA_FILES = {
     "publications-pending.json",
     "experience.json",
     "education.json",
+    "presentations.json",
+    "teaching.json",
     "skills.json",
     "awards.json",
 }

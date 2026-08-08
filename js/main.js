@@ -109,6 +109,28 @@
     });
   }
 
+  /* ---------- Presentations ---------- */
+  function renderPresentations(items) {
+    const list = document.getElementById("presentationList");
+    if (!list) return;
+    list.innerHTML = items
+      .map((p) => {
+        const tags = (p.tags || [])
+          .map((t) => `<span class="pub-tag">${esc(t)}</span>`)
+          .join("");
+        return `
+        <article class="pub-row">
+          <div class="pub-year">${esc(p.date || p.year)}</div>
+          <div>
+            <h3 class="pub-title">${linkedTitle(p)}</h3>
+            <p class="pub-venue"><em>${esc(p.venueShort || p.venue)}</em>${p.location ? " · " + esc(p.location) : ""}</p>
+            ${tags ? `<div class="pub-tags">${tags}</div>` : ""}
+          </div>
+        </article>`;
+      })
+      .join("");
+  }
+
   /* ---------- Experience / Education ---------- */
   function renderTimeline(containerId, items, kind) {
     const wrap = document.getElementById(containerId);
@@ -221,7 +243,7 @@
       })
     );
 
-    const sections = ["about", "research", "publications", "experience", "contact"]
+    const sections = ["about", "research", "publications", "experience", "presentations", "contact"]
       .map((id) => document.getElementById(id))
       .filter(Boolean);
     const links = Array.from(document.querySelectorAll(".nav-links a"));
@@ -267,12 +289,14 @@
     setupFigures();
 
     try {
-      const [site, pubs, pending, experience, education, skills, awards] = await Promise.all([
+      const [site, pubs, pending, experience, education, presentations, teaching, skills, awards] = await Promise.all([
         getJSON("data/site.json"),
         getJSON("data/publications.json"),
         getJSON("data/publications-pending.json"),
         getJSON("data/experience.json"),
         getJSON("data/education.json"),
+        getJSON("data/presentations.json"),
+        getJSON("data/teaching.json"),
         getJSON("data/skills.json"),
         getJSON("data/awards.json")
       ]);
@@ -282,6 +306,8 @@
       renderPending(pending);
       renderTimeline("experienceList", experience, "experience");
       renderTimeline("educationList", education, "education");
+      renderPresentations(presentations);
+      renderTimeline("teachingList", teaching, "experience");
       renderSkills(skills);
       renderAwards(awards);
     } catch (err) {

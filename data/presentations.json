@@ -1,0 +1,48 @@
+[
+  {
+    "year": "2025",
+    "date": "Dec 2025",
+    "venue": "IEEE International Electron Devices Meeting",
+    "venueShort": "IEDM",
+    "title": "Monolithic 3D Integration of Dual-Gated ALD Oxide-Channel Non-Volatile Capacitive Memory on 40nm Si CMOS for Digital Compute-in-Memory",
+    "location": "San Francisco, CA, USA",
+    "tags": [
+      "Conference highlight paper",
+      "Nominated — Roger A. Haken Best Student Paper Award"
+    ],
+    "url": "https://ieeexplore.ieee.org/document/11353811/"
+  },
+  {
+    "year": "2025",
+    "date": "Sep 2025",
+    "venue": "SRC TECHCON",
+    "venueShort": "SRC TechCon",
+    "title": "Process-to-System Co-optimization of Oxide/Ferroelectric Devices for Next-Generation Memory and Compute-in-Memory Hardware",
+    "location": "Austin, TX, USA",
+    "tags": [
+      "SRC Research Scholar annual review presentation"
+    ]
+  },
+  {
+    "year": "2024",
+    "date": "Dec 2024",
+    "venue": "IEEE International Electron Devices Meeting",
+    "venueShort": "IEDM",
+    "title": "BEOL-compatible non-volatile capacitive synapse with ALD W-doped In₂O₃ semiconductor layer",
+    "location": "San Francisco, CA, USA",
+    "tags": [],
+    "url": "https://ieeexplore.ieee.org/document/10873481/"
+  },
+  {
+    "year": "2024",
+    "date": "Jun 2024",
+    "venue": "IEEE Device Research Conference",
+    "venueShort": "DRC",
+    "title": "Optimization of backside of silicon-compatible high voltage superlattice capacitor for 12V-to-6V on-chip voltage conversion",
+    "location": "College Park, MD, USA",
+    "tags": [
+      "Nominated — Best Oral Presentation Award (top 15 finalist)"
+    ],
+    "url": "https://ieeexplore.ieee.org/document/10605255/"
+  }
+]

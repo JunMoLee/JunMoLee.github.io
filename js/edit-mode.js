@@ -19,6 +19,8 @@
     "pendingList",
     "experienceList",
     "educationList",
+    "presentationList",
+    "teachingList",
     "skillsGrid",
     "awardList",
     "contactLinks",
@@ -30,6 +32,8 @@
     pendingList: "<h3>In progress</h3>\n      <!-- injected by main.js -->",
     experienceList: "<!-- injected -->",
     educationList: "<!-- injected -->",
+    presentationList: "<!-- injected by main.js -->",
+    teachingList: "<!-- injected -->",
     skillsGrid: "<!-- injected -->",
     awardList: "<!-- injected -->",
     contactLinks: "<!-- injected -->",
@@ -42,6 +46,8 @@
     "publications-pending.json",
     "experience.json",
     "education.json",
+    "presentations.json",
+    "teaching.json",
     "skills.json",
     "awards.json"
   ];
