@@ -92,7 +92,7 @@
         </div>
 
         <div>
-          <div style="opacity:0.55; margin-bottom:4px;">DATA FILES (publications, experience, etc.)</div>
+          <div style="opacity:0.55; margin-bottom:4px;">LISTS (publications, experience, skills, etc.)</div>
           <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
             <select id="dataFileSelect" style="
               font:inherit; background:#0F1114; color:#ECE8DD; border:1px solid #3A3D43;
@@ -101,8 +101,12 @@
             </select>
             <button id="saveJsonBtn" type="button" disabled style="
               font:inherit; cursor:pointer; background:#A8551E; color:#fff;
-              border:1px solid #A8551E; padding:4px 8px; opacity:0.4;">Save JSON</button>
+              border:1px solid #A8551E; padding:4px 8px; opacity:0.4;">Save</button>
+            <a id="rawToggleLink" href="#" style="display:none; color:#8A8D8F; text-decoration:underline; font-size:11px;">raw JSON</a>
           </div>
+          <div id="dataFormContainer" style="
+            display:none; flex-direction:column; gap:8px;
+            margin-top:6px; max-height:280px; overflow:auto;"></div>
           <textarea id="jsonEditor" spellcheck="false" style="
             display:none; width:100%; margin-top:6px; box-sizing:border-box;
             font-family:inherit; font-size:11px; background:#0F1114; color:#ECE8DD;
@@ -253,31 +257,48 @@
     setSaveEnabled(true);
   }
 
+  function stripClass(scope, selector, className) {
+    scope.querySelectorAll(selector).forEach((el) => {
+      el.classList.remove(className);
+      if (!el.getAttribute("class")) el.removeAttribute("class");
+    });
+  }
+
+  // Anything main.js or edit-mode.js itself toggles at runtime based on
+  // scroll position / hover / load state — never something to freeze into
+  // the saved source, or the page would load "pre-scrolled" (reveal
+  // animations skipped, nav showing the wrong active link, a stale
+  // is-broken/has-image on figures that no longer matches reality, etc).
+  function stripRuntimeState(clone) {
+    stripClass(clone, ".editor-leaf", "editor-leaf");
+    clone.querySelectorAll(".editor-leaf, [contenteditable]").forEach((el) => {
+      el.removeAttribute("contenteditable");
+      el.classList.remove("is-dirty");
+      if (!el.getAttribute("class")) el.removeAttribute("class");
+    });
+    stripClass(clone, ".reveal.is-visible", "is-visible");
+    stripClass(clone, ".site-nav.is-scrolled", "is-scrolled");
+    stripClass(clone, ".nav-links a.is-active", "is-active");
+    stripClass(clone, ".mobile-menu.is-open", "is-open");
+    const toggle = clone.querySelector("#navToggle");
+    if (toggle) toggle.setAttribute("aria-expanded", "false");
+    // is-broken/has-image reflect whether a figure image currently loads —
+    // re-evaluated fresh on every page load, so freezing today's result
+    // would wrongly hide a real image added later, or show a stale
+    // placeholder for one that was removed.
+    stripClass(clone, ".figure-frame img.is-broken", "is-broken");
+    stripClass(clone, ".figure-frame.has-image", "has-image");
+  }
+
   function buildSaveableHtml() {
     const clone = document.getElementById("editableRoot").cloneNode(true);
     DYNAMIC_IDS.forEach((id) => {
       const node = clone.querySelector("#" + id);
       if (node) node.innerHTML = DYNAMIC_PLACEHOLDERS[id];
     });
-    // Local-editor-only attributes/classes on every leaf; resize-drag inline
-    // width/height on .figure-frame/.hero-content/etc. are kept as-is.
-    clone.querySelectorAll(".editor-leaf").forEach((leaf) => {
-      leaf.removeAttribute("contenteditable");
-      leaf.classList.remove("editor-leaf", "is-dirty");
-      if (!leaf.getAttribute("class")) leaf.removeAttribute("class");
-    });
-    // main.js adds is-broken/has-image at runtime depending on whether a
-    // figure image currently loads — transient state, not something to
-    // freeze into the saved source (it would wrongly hide a real image
-    // added later, or show a stale placeholder for one removed later).
-    clone.querySelectorAll(".figure-frame img.is-broken").forEach((img) => {
-      img.classList.remove("is-broken");
-      if (!img.getAttribute("class")) img.removeAttribute("class");
-    });
-    clone.querySelectorAll(".figure-frame.has-image").forEach((frame) => {
-      frame.classList.remove("has-image");
-      if (!frame.getAttribute("class")) frame.removeAttribute("class");
-    });
+    // Resize-drag inline width/height on .figure-frame/.hero-content/etc.
+    // are real user edits and are intentionally kept as-is.
+    stripRuntimeState(clone);
     return clone.outerHTML;
   }
 
@@ -304,11 +325,193 @@
     }
   }
 
-  async function loadJsonFile(filename) {
+  // --- Generic form builder for data/*.json -------------------------------
+  // Works for any file without hardcoded per-file schemas: it discovers the
+  // shape (array of objects, or a flat object) and each field's type from
+  // the data itself, so new fields (like the "url" added to publications)
+  // just show up automatically — no editor code changes needed.
+
+  let currentDataFile = null;
+  let currentData = null;
+  let rawMode = false;
+
+  function fieldEl(labelText, inputEl) {
+    const wrap = document.createElement("div");
+    wrap.style.cssText = "display:flex; flex-direction:column; gap:2px;";
+    const label = document.createElement("label");
+    label.textContent = labelText;
+    label.style.cssText = "font-size:10px; opacity:0.55; text-transform:uppercase; letter-spacing:0.04em;";
+    wrap.appendChild(label);
+    wrap.appendChild(inputEl);
+    return wrap;
+  }
+
+  function textInput(value, onChange, multiline) {
+    const input = document.createElement(multiline ? "textarea" : "input");
+    if (!multiline) input.type = "text";
+    else input.rows = value.length > 160 ? 4 : 2;
+    input.value = value;
+    input.spellcheck = false;
+    input.style.cssText = `
+      font:inherit; font-size:11px; background:#0F1114; color:#ECE8DD;
+      border:1px solid #3A3D43; padding:4px 6px; width:100%; box-sizing:border-box;
+      ${multiline ? "resize:vertical;" : ""}
+    `;
+    input.addEventListener("input", () => onChange(input.value));
+    return input;
+  }
+
+  // Union of keys across every entry, in first-seen order — so every
+  // entry's card shows every field this file type can have, even ones
+  // this particular entry doesn't currently use.
+  function schemaKeys(array) {
+    const keys = [];
+    array.forEach((entry) => Object.keys(entry).forEach((k) => { if (!keys.includes(k)) keys.push(k); }));
+    return keys;
+  }
+
+  function inferKind(array, key) {
+    for (const entry of array) {
+      if (key in entry) {
+        const v = entry[key];
+        if (Array.isArray(v)) return v.length && typeof v[0] === "object" ? "array-of-objects" : "array-of-strings";
+        return "string";
+      }
+    }
+    return "string";
+  }
+
+  function blankValueFor(kind) {
+    if (kind === "array-of-strings" || kind === "array-of-objects") return [];
+    return "";
+  }
+
+  function renderField(key, kind, value, onChange) {
+    if (kind === "array-of-strings") {
+      return fieldEl(key + " (one per line)", textInput((value || []).join("\n"), (v) => {
+        onChange(v.split("\n").map((s) => s.trim()).filter(Boolean));
+      }, true));
+    }
+    if (kind === "array-of-objects") {
+      return fieldEl(key + " (advanced — raw JSON list)", textInput(JSON.stringify(value || []), (v) => {
+        try { onChange(JSON.parse(v || "[]")); } catch (e) { /* leave in place until valid */ }
+      }, true));
+    }
+    const str = value == null ? "" : String(value);
+    return fieldEl(key, textInput(str, onChange, str.length > 50));
+  }
+
+  function renderEntryCard(entry, keys, kinds, onRemove) {
+    const card = document.createElement("div");
+    card.style.cssText = "border:1px solid #3A3D43; padding:8px; display:flex; flex-direction:column; gap:6px;";
+    const header = document.createElement("div");
+    header.style.cssText = "display:flex; justify-content:flex-end;";
+    const removeBtn = document.createElement("button");
+    removeBtn.type = "button";
+    removeBtn.textContent = "Remove entry ×";
+    removeBtn.style.cssText = "font:inherit; font-size:10.5px; cursor:pointer; background:none; color:#E0684A; border:1px solid #5A2E2E; padding:2px 6px;";
+    removeBtn.addEventListener("click", onRemove);
+    header.appendChild(removeBtn);
+    card.appendChild(header);
+
+    keys.forEach((key) => {
+      const kind = kinds[key];
+      const value = key in entry ? entry[key] : blankValueFor(kind);
+      card.appendChild(renderField(key, kind, value, (newVal) => { entry[key] = newVal; }));
+    });
+    return card;
+  }
+
+  function renderDataForm() {
+    const container = panel.querySelector("#dataFormContainer");
+    container.innerHTML = "";
+
+    if (Array.isArray(currentData)) {
+      const keys = schemaKeys(currentData);
+      const kinds = {};
+      keys.forEach((k) => (kinds[k] = inferKind(currentData, k)));
+
+      currentData.forEach((entry, idx) => {
+        const card = renderEntryCard(entry, keys, kinds, () => {
+          currentData.splice(idx, 1);
+          renderDataForm();
+        });
+        container.appendChild(card);
+      });
+
+      const addBtn = document.createElement("button");
+      addBtn.type = "button";
+      addBtn.textContent = "+ Add entry";
+      addBtn.style.cssText = "font:inherit; cursor:pointer; background:#2C2F35; color:#ECE8DD; border:1px solid #3A3D43; padding:6px;";
+      addBtn.addEventListener("click", () => {
+        const blank = {};
+        keys.forEach((k) => (blank[k] = blankValueFor(kinds[k])));
+        currentData.push(blank);
+        renderDataForm();
+      });
+      container.appendChild(addBtn);
+    } else if (currentData && typeof currentData === "object") {
+      const card = document.createElement("div");
+      card.style.cssText = "display:flex; flex-direction:column; gap:6px;";
+      Object.keys(currentData).forEach((key) => {
+        const value = currentData[key];
+        const kind = Array.isArray(value) ? (value.length && typeof value[0] === "object" ? "array-of-objects" : "array-of-strings") : "string";
+        card.appendChild(renderField(key, kind, value, (newVal) => { currentData[key] = newVal; }));
+      });
+      container.appendChild(card);
+    }
+  }
+
+  function stripEmpty(value) {
+    if (Array.isArray(value)) return value.map(stripEmpty);
+    if (value && typeof value === "object") {
+      const out = {};
+      Object.entries(value).forEach(([k, v]) => {
+        if (v === "") return; // omit unset optional string fields, matches original file style
+        out[k] = stripEmpty(v);
+      });
+      return out;
+    }
+    return value;
+  }
+
+  function setRawMode(on) {
+    rawMode = on;
     const textarea = panel.querySelector("#jsonEditor");
-    const saveBtn = panel.querySelector("#saveJsonBtn");
-    if (!filename) {
+    const formContainer = panel.querySelector("#dataFormContainer");
+    const link = panel.querySelector("#rawToggleLink");
+    if (on) {
+      textarea.value = JSON.stringify(currentData, null, 2);
+      textarea.style.display = "block";
+      formContainer.style.display = "none";
+      link.textContent = "form view";
+    } else {
+      try {
+        currentData = JSON.parse(textarea.value);
+      } catch (err) {
+        setStatus("Invalid JSON, staying in raw view — " + err.message, true);
+        rawMode = true;
+        return;
+      }
       textarea.style.display = "none";
+      formContainer.style.display = "flex";
+      link.textContent = "raw JSON";
+      renderDataForm();
+    }
+  }
+
+  async function loadJsonFile(filename) {
+    const saveBtn = panel.querySelector("#saveJsonBtn");
+    const formContainer = panel.querySelector("#dataFormContainer");
+    const textarea = panel.querySelector("#jsonEditor");
+    const link = panel.querySelector("#rawToggleLink");
+    currentDataFile = filename;
+    rawMode = false;
+
+    if (!filename) {
+      formContainer.style.display = "none";
+      textarea.style.display = "none";
+      link.style.display = "none";
       saveBtn.disabled = true;
       saveBtn.style.opacity = "0.4";
       return;
@@ -316,9 +519,12 @@
     try {
       const res = await fetch("data/" + filename, { cache: "no-store" });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const text = await res.text();
-      textarea.value = JSON.stringify(JSON.parse(text), null, 2);
-      textarea.style.display = "block";
+      currentData = JSON.parse(await res.text());
+      formContainer.style.display = "flex";
+      textarea.style.display = "none";
+      link.style.display = "inline";
+      link.textContent = "raw JSON";
+      renderDataForm();
       saveBtn.disabled = false;
       saveBtn.style.opacity = "1";
       setStatus(`Loaded ${filename}`, false);
@@ -328,25 +534,25 @@
   }
 
   async function saveJsonFile() {
-    const select = panel.querySelector("#dataFileSelect");
-    const textarea = panel.querySelector("#jsonEditor");
-    const filename = select.value;
+    const filename = currentDataFile;
     if (!filename) return;
 
-    let parsed;
-    try {
-      parsed = JSON.parse(textarea.value);
-    } catch (err) {
-      setStatus("Invalid JSON — " + err.message, true);
-      return;
+    if (rawMode) {
+      try {
+        currentData = JSON.parse(panel.querySelector("#jsonEditor").value);
+      } catch (err) {
+        setStatus("Invalid JSON — " + err.message, true);
+        return;
+      }
     }
 
+    const payload = stripEmpty(currentData);
     setStatus(`Saving ${filename}…`, false);
     try {
       const res = await fetch("/__save-json__", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ file: filename, data: parsed })
+        body: JSON.stringify({ file: filename, data: payload })
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
@@ -407,6 +613,10 @@
     panel.querySelector("#publishBtn").addEventListener("click", publishChanges);
     panel.querySelector("#dataFileSelect").addEventListener("change", (e) => loadJsonFile(e.target.value));
     panel.querySelector("#saveJsonBtn").addEventListener("click", saveJsonFile);
+    panel.querySelector("#rawToggleLink").addEventListener("click", (e) => {
+      e.preventDefault();
+      setRawMode(!rawMode);
+    });
 
     const collapseBtn = panel.querySelector("#editCollapseBtn");
     const body = panel.querySelector("#editorBody");

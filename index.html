@@ -126,23 +126,23 @@
         <span class="section-kicker">Process → Device → Integration → Circuit → System</span>
         <h2 class="section-title">Research</h2>
         <p class="section-intro" data-edit="research-intro">My work follows a single thread from thin-film process development to system-level
-          benchmarking. Three projects trace that thread below — each spans a different segment
+          benchmarking. Four projects trace that thread below — each spans a different segment
           of the stack shown here.</p>
       </div>
     </div>
 
     <ul class="stage-rail reveal">
-      <li class="is-active"><span class="num">01</span>Process Development</li>
-      <li class="is-active"><span class="num">02</span>Device Fabrication</li>
-      <li><span class="num">03</span>M3D Integration</li>
-      <li><span class="num">04</span>Circuit / System Design</li>
-      <li><span class="num">05</span>System Benchmark</li>
+      <li class="is-active"><a href="#story-process-device"><span class="num">01</span>Process Development</a></li>
+      <li class="is-active"><a href="#story-process-device"><span class="num">02</span>Device Fabrication</a></li>
+      <li><a href="#story-m3d-integration"><span class="num">03</span>M3D Integration</a></li>
+      <li><a href="#story-circuit-design"><span class="num">04</span>Circuit / System Design</a></li>
+      <li><a href="#story-benchmarking"><span class="num">05</span>System Benchmark</a></li>
     </ul>
 
     <!-- Theme A -->
-    <article class="research-story reveal">
+    <article class="research-story reveal" id="story-process-device">
       <div class="story-content">
-        <p class="story-kicker">01 — Process → Device</p>
+        <p class="story-kicker">01–02 — Process → Device</p>
         <h3 class="story-title" data-edit="theme-a-title">Oxide-Semiconductor &amp; Ferroelectric Capacitive Memory</h3>
         <p class="story-text" data-edit="theme-a-text">Non-volatile memory built into a chip's back-end-of-line (BEOL) has to switch state without
           disturbing the CMOS logic underneath it. I develop the two material systems that make this
@@ -173,9 +173,9 @@
     </article>
 
     <!-- Theme B -->
-    <article class="research-story reveal">
+    <article class="research-story reveal" id="story-m3d-integration">
       <div class="story-content">
-        <p class="story-kicker">02 — Process Integration</p>
+        <p class="story-kicker">03 — Process Integration</p>
         <h3 class="story-title" data-edit="theme-b-title">Monolithic 3D Integration on Foundry CMOS</h3>
         <p class="story-text" data-edit="theme-b-text">A BEOL memory device only matters if it can be built on top of real logic. I designed and
           experimentally demonstrated a monolithic 3D (M3D) integration flow that stacks dual-gated
@@ -206,17 +206,48 @@
     </article>
 
     <!-- Theme C -->
-    <article class="research-story reveal">
+    <article class="research-story reveal" id="story-circuit-design">
       <div class="story-content">
-        <p class="story-kicker">03 — Circuit / System Design &amp; Benchmarking</p>
-        <h3 class="story-title" data-edit="theme-c-title">Device-to-System Benchmarking (DTCO / STCO)</h3>
-        <p class="story-text" data-edit="theme-c-text">Deciding whether a new device is worth fabricating requires seeing its effect on chip-level
+        <p class="story-kicker">04 — Circuit / System Design</p>
+        <h3 class="story-title" data-edit="theme-c-title">Capacitive Digital Compute-in-Memory Circuit Design</h3>
+        <p class="story-text" data-edit="theme-c-text">A fabricated memory device becomes useful for AI hardware only once it is built into a
+          circuit architecture. I designed capacitive digital compute-in-memory (Cap-DCIM), an AI
+          accelerator architecture built directly on the non-volatile capacitive memories demonstrated
+          on TSMC's 40&nbsp;nm chip, and a CFET-based 8T DCIM bit-cell for 0.5&nbsp;nm-node 3D digital
+          compute-in-memory — connecting the devices from the earlier stages to circuit-level AI
+          hardware design.</p>
+        <dl class="spec-strip">
+          <div class="spec-row"><dt>Architecture</dt><dd>Capacitive digital compute-in-memory (Cap-DCIM); CFET-based 8T DCIM bit-cell</dd></div>
+          <div class="spec-row"><dt>Technology</dt><dd>Built on the TSMC 40&nbsp;nm M3D capacitive memory; 0.5&nbsp;nm / A5 CFET node</dd></div>
+        </dl>
+        <div class="tag-row">
+          <span class="tag">IEDM '25</span><span class="tag">T-VLSI '25</span><span class="tag">APCCAS '24</span>
+        </div>
+      </div>
+      <figure class="story-figure">
+        <div class="figure-frame">
+          <img src="assets/images/fig-circuit-design.jpg" alt="Diagram of the capacitive digital compute-in-memory circuit architecture">
+          <div class="figure-placeholder">
+            <span>Figure pending</span>
+            <code>assets/images/fig-circuit-design.jpg</code>
+          </div>
+        </div>
+        <figcaption>Cap-DCIM / CFET 8T DCIM — circuit architecture built on the fabricated memory.</figcaption>
+      </figure>
+    </article>
+
+    <!-- Theme D -->
+    <article class="research-story reveal" id="story-benchmarking">
+      <div class="story-content">
+        <p class="story-kicker">05 — System Benchmark (DTCO / STCO)</p>
+        <h3 class="story-title" data-edit="theme-d-title">Device-to-System Benchmarking (DTCO / STCO)</h3>
+        <p class="story-text" data-edit="theme-d-text">Deciding whether a new device is worth fabricating requires seeing its effect on chip-level
           power, performance, and area — not just its I–V curve. I lead development of
           <strong>NeuroSim&nbsp;V1.4</strong>, a C++/Python benchmarking framework that models
           compute-in-memory hardware at technology nodes down to 0.5&nbsp;nm, including CFET-based 3D
           architectures. I have used it to perform DTCO of digital compute-in-memory at leading-edge
-          nodes and to design a CFET-based 8T DCIM cell — connecting device-level assumptions to
-          system-level outcomes that other researchers can reuse.</p>
+          nodes — connecting device-level assumptions to system-level outcomes that other researchers
+          can reuse.</p>
         <dl class="spec-strip">
           <div class="spec-row"><dt>Framework</dt><dd>NeuroSim V1.4 — lead developer</dd></div>
           <div class="spec-row"><dt>Nodes</dt><dd>Down to 0.5&nbsp;nm / A5 CFET technology</dd></div>
