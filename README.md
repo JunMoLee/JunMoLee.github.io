@@ -18,6 +18,10 @@ js/main.js             Fetches the JSON files in data/ and renders publications,
                        experience, education, skills, awards, and the link rows.
                        Also handles nav scroll state, the mobile menu, and
                        scroll-reveal animation.
+js/edit-mode.js         Local-only live text editor (see "Live in-browser
+                       editing" below). Inert everywhere except localhost.
+tools/dev_server.py     Local dev server used only for live editing — same as
+                       `python -m http.server` but can also save edits to disk.
 data/*.json             Editable content — see "Updating content" below.
 assets/cv/              The public, downloadable CV (phone-redacted — see below).
 assets/icons/favicon.svg  Site favicon (original mark, not a photo/logo).
@@ -47,32 +51,59 @@ Each publication in `data/publications.json` supports: `year`, `venue`,
 substring is auto-bolded), `vol` (optional, e.g. page range), and `tags`
 (array of small badges like "Nominated — ...", "Invited", "Equal contribution").
 
-## Editing the prose text (hero / about / research narrative)
+## Live in-browser editing (local only)
 
-This copy lives directly in `index.html` as plain readable HTML, not in a
-`data/*.json` file — the fastest way to find the exact spot to edit is to
-**search for the words you see on the page**, not to hunt through the file
-top to bottom:
+The hero, about, and research/contact prose (16 text blocks total) can be
+edited directly on the page, with a real Save button that writes straight
+into `index.html`. This needs the write-capable dev server instead of the
+plain one:
 
-1. Open `http://localhost:8080/` (or the live site) and select/copy the exact
-   phrase you want to change — e.g. `Process-to-system co-optimization`.
+```bash
+python tools/dev_server.py
+# then open http://localhost:8080/
+```
+
+A small **"LOCAL EDITOR"** panel appears in the bottom-right corner —
+it only shows up on `localhost`/`127.0.0.1`; it does nothing at all on the
+real deployed site, so there's no risk of it ever appearing publicly.
+
+1. Click **Enable editing** — editable text gets a dashed outline.
+2. Click into any outlined text and type normally (Enter is disabled inside
+   these blocks on purpose, since they're meant to be single
+   headings/paragraphs — line breaks aren't needed here).
+3. Click **Save** — it writes the changes into `index.html` on disk and
+   confirms with "Saved ✓". Refresh the page to see the clean, saved version.
+4. Publish as usual: `git add -A && git commit -m "..." && git push`.
+
+If Save ever fails, the panel shows why (most commonly: still running the
+plain `python -m http.server` instead of `tools/dev_server.py`, which can
+serve files but can't write them).
+
+**What this doesn't cover** — falls back to manual editing (see below):
+publication/experience/education/skills/award entries (those live in
+`data/*.json`), the small spec-strip/tag labels inside each research story,
+the browser-tab title and search-preview text, and image `alt`/`figcaption`
+text.
+
+## Editing everything else (manual)
+
+For anything the live editor doesn't cover, the fastest way to find the
+exact spot is to **search for the words you see on the page** rather than
+hunting through the file top to bottom:
+
+1. Select/copy the exact phrase you want to change from the rendered page.
 2. In your editor, use **Find in Files** across the project folder (VS Code:
-   `Ctrl+Shift+F` / `Cmd+Shift+F`; Notepad++: `Ctrl+Shift+F`) and paste that
-   phrase in. It'll jump straight to the matching line in `index.html`.
-3. Edit the text between the HTML tags, save, refresh the local preview to
-   confirm, then `git add -A && git commit && git push` as usual.
+   `Ctrl+Shift+F` / `Cmd+Shift+F`; Notepad++: `Ctrl+Shift+F`) and paste it in
+   — jumps straight to the matching line.
+3. Edit, save, refresh the local preview to confirm, then
+   `git add -A && git commit && git push`.
 
-Section boundaries are marked with `<!-- ===== NAME ===== -->` comments
-(`HERO`, `ABOUT`, `RESEARCH`, `PUBLICATIONS`, etc.) if you want to browse
-section-by-section instead.
-
-**Two exceptions** — text that isn't visible on the page itself, so you can't
-select it to search for it. Both are near the very top of `index.html`:
-- The browser-tab title and search-preview text: the `<title>` tag and the
-  `<meta name="description" ...>` tag.
-- Image `alt` text (screen-reader-only descriptions) and `<figcaption>`
-  captions on the research figures — these sit right next to each `<img>` in
-  the Research section, worth updating once you drop in a real figure.
+Section boundaries in `index.html` are marked with `<!-- ===== NAME ===== -->`
+comments (`HERO`, `ABOUT`, `RESEARCH`, `PUBLICATIONS`, etc.) if you'd rather
+browse section-by-section. The browser-tab title, search-preview text
+(`<title>`, `<meta name="description">`), and figure `alt`/`figcaption` text
+aren't visible on the page itself, so they can't be found by selecting text
+— they're all near the very top of `index.html` or right next to each `<img>`.
 
 ## Replacing the placeholder research figures
 
@@ -119,7 +150,7 @@ meant to expose a personal phone number.
 
 ## Running locally
 
-Any static file server works. From the project root:
+Any static file server works for just previewing. From the project root:
 
 ```bash
 python -m http.server 8080
@@ -131,6 +162,10 @@ or, with Node installed:
 ```bash
 npx serve .
 ```
+
+To also use the **live in-browser editor** (see below), use
+`python tools/dev_server.py` instead — it serves the exact same content but
+can additionally save edits back to `index.html`.
 
 Private (login-only) traffic stats via [GoatCounter](https://www.goatcounter.com/)
 — no cookies, no personal data collected, no consent banner needed. The
