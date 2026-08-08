@@ -352,13 +352,35 @@ button { font: inherit; background: none; border: none; cursor: pointer; color: 
   width: 1.5rem; height: 1px;
   background: var(--accent);
 }
+.hero-identity {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  margin-top: var(--sp-4);
+}
+.hero-avatar { flex-shrink: 0; }
+.hero-avatar .figure-frame {
+  width: 5.5rem;
+  height: 5.5rem;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  resize: none !important;
+}
+.hero-avatar .figure-frame img { border-radius: 50%; }
+.hero-avatar .figure-placeholder { padding: var(--sp-2); font-size: 0.5rem; gap: 2px; }
+.hero-avatar .figure-placeholder code { font-size: 0.45rem; padding: 0.1rem 0.3rem; word-break: break-all; }
+body.local-editing .hero-avatar .figure-frame::after { font-size: 0.5rem; padding: 3px; line-height: 1.1; }
+.hero-avatar .figure-zoom-control { left: 3px; right: 3px; bottom: 3px; padding: 2px 4px; gap: 3px; }
+.hero-avatar .figure-zoom-control .figure-zoom-value { font-size: 0.5rem; min-width: 1.8em; }
 .hero-name {
   font-family: var(--font-serif);
   font-size: var(--fs-hero);
   font-weight: 600;
   line-height: 1.02;
   letter-spacing: -0.02em;
-  margin-top: var(--sp-4);
+}
+@media (max-width: 480px) {
+  .hero-avatar .figure-frame { width: 4rem; height: 4rem; }
 }
 .hero-tagline {
   font-family: var(--font-serif);
