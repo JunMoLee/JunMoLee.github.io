@@ -433,6 +433,18 @@ button { font: inherit; background: none; border: none; cursor: pointer; color: 
 .figure-frame.has-image .figure-placeholder { display: none; }
 .figure-frame img.is-broken { display: none; }
 
+/* Drag-resize handles, active only while the local editor is in edit mode.
+   Dragging writes an explicit inline width/height, which is a fixed size —
+   it will no longer respond to smaller screens once saved, so resize the
+   figure boxes with that in mind (see js/edit-mode.js panel note). */
+body.local-editing .figure-frame,
+body.local-editing .hero-content,
+body.local-editing .about-body,
+body.local-editing .story-content {
+  resize: both;
+  overflow: auto;
+}
+
 @media (max-width: 980px) {
   .hero-grid { grid-template-columns: 1fr; }
   .hero-figure { max-width: 20rem; margin: var(--sp-8) auto 0; opacity: 0.9; }
@@ -602,6 +614,21 @@ button { font: inherit; background: none; border: none; cursor: pointer; color: 
   font-size: 1.1rem;
   font-weight: 600;
   line-height: 1.4;
+}
+.pub-title-link {
+  color: inherit;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  transition: background-size var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.pub-title-link:hover { color: var(--accent); background-size: 100% 1px; }
+.pub-title-link svg {
+  width: 13px; height: 13px;
+  margin-left: 0.25em;
+  vertical-align: middle;
+  opacity: 0.6;
 }
 .pub-authors {
   margin-top: var(--sp-2);

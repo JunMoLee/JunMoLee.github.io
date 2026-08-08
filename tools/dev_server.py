@@ -12,16 +12,20 @@ Usage:
     python tools/dev_server.py 5000       # custom port
 
 Endpoints (used by js/edit-mode.js, not meant to be called directly):
-    POST /__save__      Write text edits into index.html.
+    POST /__save__       Replace the whole editable region of index.html.
+    POST /__save-json__  Overwrite one whitelisted data/*.json file.
     POST /__publish__    git add -A && git commit && git push, in this repo.
 
 Safety:
     - Binds to 127.0.0.1 only — never reachable from your network, let alone
       the internet.
-    - /__save__ only writes the exact `data-edit="..."` markers listed below;
-      anything else is rejected, and a save either fully succeeds (every
-      requested marker found and replaced) or fully fails and writes
-      nothing — never a half-applied file.
+    - /__save__ only replaces the content between the `<!-- EDITABLE:START -->`
+      and `<!-- EDITABLE:END -->` markers in index.html — everything outside
+      that (the <head>, analytics/script tags) is untouched. If those markers
+      are ever removed from index.html, saving fails loudly instead of
+      writing something wrong.
+    - /__save-json__ only writes to the exact filenames listed in DATA_FILES,
+      inside data/ — no arbitrary paths, and the content must parse as JSON.
     - /__publish__ runs plain git commands in this project's working tree —
       the same thing you'd type yourself. It pushes to whatever remote your
       local git is already configured with (`git remote -v`), using your
@@ -39,61 +43,35 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 INDEX_HTML = PROJECT_ROOT / "index.html"
+DATA_DIR = PROJECT_ROOT / "data"
 
-# marker -> expected tag name. Must match the data-edit attributes in index.html.
-EDITABLE_MARKERS = {
-    "hero-eyebrow": "p",
-    "hero-name": "h1",
-    "hero-tagline": "p",
-    "hero-lead": "p",
-    "hero-status": "span",
-    "about-p1": "p",
-    "about-p2": "p",
-    "research-intro": "p",
-    "theme-a-title": "h3",
-    "theme-a-text": "p",
-    "theme-b-title": "h3",
-    "theme-b-text": "p",
-    "theme-c-title": "h3",
-    "theme-c-text": "p",
-    "contact-title": "h2",
-    "contact-sub": "p",
+REGION_PATTERN = re.compile(
+    r"(<!-- EDITABLE:START -->)(.*?)(<!-- EDITABLE:END -->)", re.DOTALL
+)
+
+DATA_FILES = {
+    "site.json",
+    "publications.json",
+    "publications-pending.json",
+    "experience.json",
+    "education.json",
+    "skills.json",
+    "awards.json",
 }
 
 
-def apply_edits(html, edits):
-    """Replace the inner content of each whitelisted data-edit element.
-    Returns (new_html, errors). Applies nothing if there are any errors."""
-    errors = []
-    working = html
+def apply_region(html, new_region_html):
+    """Replace everything between the EDITABLE:START/END markers.
+    Returns (new_html, error)."""
+    if not REGION_PATTERN.search(html):
+        return html, "EDITABLE:START/END markers not found in index.html"
 
-    for edit in edits:
-        marker = edit.get("marker")
-        new_inner = edit.get("html", "")
-        expected_tag = EDITABLE_MARKERS.get(marker)
-
-        if expected_tag is None:
-            errors.append(f'"{marker}" is not an editable marker')
-            continue
-        if edit.get("tag") != expected_tag:
-            errors.append(f'"{marker}" tag mismatch (expected <{expected_tag}>)')
-            continue
-
-        pattern = re.compile(
-            r"(<" + expected_tag + r"\b[^>]*\bdata-edit=\"" + re.escape(marker) + r"\"[^>]*>)"
-            r"(.*?)"
-            r"(</" + expected_tag + r">)",
-            re.DOTALL,
-        )
-        working, count = pattern.subn(
-            lambda m: m.group(1) + new_inner + m.group(3), working, count=1
-        )
-        if count == 0:
-            errors.append(f'"{marker}" not found in index.html (structure may have changed)')
-
-    if errors:
-        return html, errors
-    return working, []
+    updated, count = REGION_PATTERN.subn(
+        lambda m: m.group(1) + "\n" + new_region_html + "\n" + m.group(3), html, count=1
+    )
+    if count == 0:
+        return html, "Failed to replace the editable region"
+    return updated, None
 
 
 def run_git(*args):
@@ -111,30 +89,60 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     def do_POST(self):
         if self.path == "/__save__":
             self._handle_save()
+        elif self.path == "/__save-json__":
+            self._handle_save_json()
         elif self.path == "/__publish__":
             self._handle_publish()
         else:
             self.send_error(404, "Unknown endpoint")
 
+    def _read_json_body(self):
+        length = int(self.headers.get("Content-Length", 0))
+        return json.loads(self.rfile.read(length) or b"{}")
+
     def _handle_save(self):
         try:
-            length = int(self.headers.get("Content-Length", 0))
-            body = json.loads(self.rfile.read(length) or b"{}")
-            edits = body.get("edits", [])
+            body = self._read_json_body()
+            new_region_html = body.get("html", "")
         except (ValueError, json.JSONDecodeError):
             self._json_response(400, {"error": "Malformed request body"})
             return
 
-        original = INDEX_HTML.read_text(encoding="utf-8")
-        updated, errors = apply_edits(original, edits)
+        if not new_region_html.strip():
+            self._json_response(400, {"error": "Empty page content — refusing to save"})
+            return
 
-        if errors:
-            self._json_response(400, {"error": "; ".join(errors)})
+        original = INDEX_HTML.read_text(encoding="utf-8")
+        updated, error = apply_region(original, new_region_html)
+
+        if error:
+            self._json_response(400, {"error": error})
             return
 
         INDEX_HTML.write_text(updated, encoding="utf-8")
-        print(f"Saved {len(edits)} edit(s) to index.html")
-        self._json_response(200, {"ok": True, "count": len(edits)})
+        print("Saved page text to index.html")
+        self._json_response(200, {"ok": True})
+
+    def _handle_save_json(self):
+        try:
+            body = self._read_json_body()
+            filename = body.get("file", "")
+            data = body.get("data")
+        except (ValueError, json.JSONDecodeError):
+            self._json_response(400, {"error": "Malformed request body"})
+            return
+
+        if filename not in DATA_FILES:
+            self._json_response(400, {"error": f'"{filename}" is not an editable data file'})
+            return
+        if data is None:
+            self._json_response(400, {"error": "Missing data"})
+            return
+
+        target = DATA_DIR / filename
+        target.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        print(f"Saved data/{filename}")
+        self._json_response(200, {"ok": True})
 
     def _handle_publish(self):
         try:

@@ -16,6 +16,12 @@
   // Bold "J. Lee" / "J. Lee*" within an author string without touching other names
   const boldLee = (authors) => esc(authors).replace(/J\. Lee\*?/g, (m) => `<strong>${m}</strong>`);
 
+  // Title as a link to the publisher/DOI page when a verified url is present, plain text otherwise
+  const linkedTitle = (p) =>
+    p.url
+      ? `<a href="${esc(p.url)}" target="_blank" rel="noopener" class="pub-title-link">${esc(p.title)}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></a>`
+      : esc(p.title);
+
   async function getJSON(path) {
     const res = await fetch(path, { cache: "no-store" });
     if (!res.ok) throw new Error(`Failed to load ${path}`);
@@ -71,7 +77,7 @@
         <article class="pub-row">
           <div class="pub-year">${esc(p.year)}</div>
           <div>
-            <h3 class="pub-title">${esc(p.title)}</h3>
+            <h3 class="pub-title">${linkedTitle(p)}</h3>
             <p class="pub-authors">${boldLee(p.authors)}</p>
             <p class="pub-venue"><em>${esc(p.venue)}</em>${p.vol ? ", " + esc(p.vol) : ""}, ${esc(p.year)}</p>
             ${tags ? `<div class="pub-tags">${tags}</div>` : ""}
@@ -95,7 +101,7 @@
         el(`
         <article class="pending-row">
           <p class="pending-status">${esc(p.status)}</p>
-          <h4 class="pub-title" style="font-size:1rem">${esc(p.title)}</h4>
+          <h4 class="pub-title" style="font-size:1rem">${linkedTitle(p)}</h4>
           <p class="pub-authors">${boldLee(p.authors)}</p>
           ${p.note ? `<p class="pub-venue">${esc(p.note)}</p>` : ""}
         </article>`)

@@ -21,6 +21,8 @@
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+<!-- EDITABLE:START -->
+<div id="editableRoot">
 <a class="skip-link" href="#main">Skip to content</a>
 
 <nav class="site-nav" id="siteNav" aria-label="Primary">
@@ -54,7 +56,7 @@
 <header class="hero" id="top">
   <div class="container hero-grid">
     <div class="hero-content">
-      <p class="hero-eyebrow" data-edit="hero-eyebrow">Semiconductor Device Research · Georgia Tech</p>
+      <p class="hero-eyebrow" data-edit="hero-eyebrow">Semiconductor Device Researcher · Georgia Tech</p>
       <h1 class="hero-name" data-edit="hero-name">Junmo Lee</h1>
       <p class="hero-tagline" data-edit="hero-tagline">Process-to-system co-optimization for next-generation memory and compute-in-memory hardware.</p>
       <p class="hero-lead" data-edit="hero-lead">I develop oxide-semiconductor and hafnia-based ferroelectric devices — from ALD thin-film process
@@ -260,18 +262,16 @@
 
     <div class="pub-more reveal">
       <span></span>
-      <a class="link-chip" id="scholarLink" href="#" target="_blank" rel="noopener">
+      <a class="link-chip" id="scholarLink" href="https://scholar.google.com/citations?user=2xu0eTYAAAAJ&amp;hl=en" target="_blank" rel="noopener">
         View full publication list on Google Scholar
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 17 17 7M9 7h8v8"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 17 17 7M9 7h8v8"></path></svg>
       </a>
     </div>
 
     <div class="pub-list reveal" id="pubList"><!-- injected by main.js --></div>
 
-    <div class="pending-list reveal" id="pendingList">
-      <h3>In progress</h3>
-      <!-- injected by main.js -->
-    </div>
+    <div class="pending-list reveal" id="pendingList"><h3>In progress</h3>
+      <!-- injected by main.js --></div>
   </div>
 </section>
 
@@ -333,15 +333,16 @@
     <span>Atlanta, Georgia</span>
   </div>
 </footer>
+</div>
+<!-- EDITABLE:END -->
 
 <script src="js/main.js" defer></script>
 
-<!-- Local-only live text editor — inert on the real deployed site.
-     See README "Live in-browser editing (local only)". -->
+<!-- Local-only live text editor — inert on the real deployed site. -->
 <script src="js/edit-mode.js" defer></script>
 
 <!-- Private analytics (GoatCounter) — dashboard: https://semiconductorjunmolee.goatcounter.com/
-     No cookies, no personal data collected. See README "Analytics" section. -->
+     No cookies, no personal data collected. -->
 <script data-goatcounter="https://semiconductorjunmolee.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
 </body>
