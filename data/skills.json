@@ -1,0 +1,40 @@
+[
+  {
+    "group": "Process & Fabrication",
+    "items": [
+      "Atomic layer deposition (W-doped In₂O₃, Zr-doped HfO₂)",
+      "Photolithography",
+      "PVD — metal & oxide thin films",
+      "Dry etch (CCP / ICP-RIE)",
+      "Rapid thermal processing / annealing",
+      "Ellipsometry",
+      "Mask design — Cadence Virtuoso, KLayout"
+    ]
+  },
+  {
+    "group": "Device & Array Characterization",
+    "items": [
+      "Keysight B1500A, Keithley 4200A",
+      "Oscilloscopes, function generators",
+      "Switch matrices (Keithley 707B)",
+      "Semi-automatic probe stations (Summit 12K)",
+      "Automated / scripted measurement flows"
+    ]
+  },
+  {
+    "group": "Simulation & Circuit Design",
+    "items": [
+      "TCAD — Sentaurus, Silvaco",
+      "Cadence Virtuoso ADE Explorer",
+      "Chip-level PPA benchmarking (NeuroSim)"
+    ]
+  },
+  {
+    "group": "Programming",
+    "items": [
+      "Python",
+      "C++",
+      "MATLAB"
+    ]
+  }
+]

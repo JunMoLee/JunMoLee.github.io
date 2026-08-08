@@ -1,0 +1,23 @@
+[
+  {
+    "org": "Georgia Institute of Technology",
+    "degree": "Ph.D., Electrical & Computer Engineering (Minor: Physics)",
+    "place": "Atlanta, Georgia",
+    "period": "Aug 2022 – Aug 2027 (expected)",
+    "details": [
+      "Advisor: Prof. Shimeng Yu",
+      "SRC Research Scholar",
+      "Cumulative GPA: 3.9 / 4.0"
+    ]
+  },
+  {
+    "org": "Seoul National University",
+    "degree": "B.S., Electrical & Computer Engineering",
+    "place": "Seoul, South Korea",
+    "period": "Mar 2016 – Aug 2022",
+    "details": [
+      "Graduated summa cum laude",
+      "Cumulative GPA: 3.95 / 4.3"
+    ]
+  }
+]

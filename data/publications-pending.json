@@ -1,0 +1,14 @@
+[
+  {
+    "status": "Under review — IEEE Transactions on Nanotechnology",
+    "title": "Pulse-Mode Operation and Reliability of BEOL-Compatible Ferroelectric Non-Volatile Capacitive Memories with Amorphous Oxide Semiconductor Channels",
+    "authors": "J. Lee, C. Zhang, S. Datta, S. Yu",
+    "note": "Journal extension of IEDM 2024"
+  },
+  {
+    "status": "Submitted — IEDM 2026",
+    "title": "Logic-Compatible Capacitive Gain Cell Monolithically Integrated on Si CMOS for Bit-Cost-Scalable 3D Digital Compute-in-Memory",
+    "authors": "J. Lee, K. Lee, C. Zhang, T.-H. Kim, M. Tian, L. J.-C. Liu, M.-F. Chang, S. Datta, S. Yu",
+    "note": ""
+  }
+]

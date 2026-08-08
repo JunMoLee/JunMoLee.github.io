@@ -1,0 +1,31 @@
+[
+  {
+    "org": "Intel Corporation — Logic Technology Development",
+    "role": "Device Engineer / Data Science Intern",
+    "place": "Hillsboro, Oregon",
+    "period": "Aug 2026 – Nov 2026",
+    "points": [
+      "Working within statistical process control across the semiconductor fabrication process, applying engineering analysis tools and techniques used in high-volume manufacturing."
+    ]
+  },
+  {
+    "org": "SMDL, Seoul National University — Advisor: Prof. Jong-Ho Lee",
+    "role": "Research Intern",
+    "place": "Seoul, South Korea",
+    "period": "Jan 2021 – Aug 2022",
+    "points": [
+      "Optimized sensing-material thickness and post-deposition annealing conditions for resistive and TFT-based gas sensors through device and process analysis.",
+      "Developed a hardware-efficient weight-update scheme and a noise metric for synaptic-device-based compute-in-memory systems with abrupt conductance modulation."
+    ]
+  },
+  {
+    "org": "NMDL, Seoul National University — Advisor: Prof. Sangbum Kim",
+    "role": "Research Intern",
+    "place": "Seoul, South Korea",
+    "period": "Jan 2020 – Jan 2021",
+    "points": [
+      "Analyzed training dynamics in synaptic-device-based compute-in-memory systems with nonlinear conductance modulation.",
+      "Developed the Reverse Update Scheme to mitigate update nonlinearity in analog synaptic devices."
+    ]
+  }
+]

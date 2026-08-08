@@ -1,0 +1,94 @@
+[
+  {
+    "year": "2026",
+    "venue": "IEEE Transactions on Electron Devices",
+    "venueShort": "TED",
+    "title": "Dual-Gated ALD Oxide-Channel Non-Volatile Capacitive Memory Monolithically Integrated on Foundry 40 nm CMOS for Capacitive Digital Compute-in-Memory",
+    "authors": "J. Lee, C. Zhang, S. Park, H. Park, T.-H. Kim, L. Liu, E. Ambrosi, M. Song, X. Bao, M.-F. Chang, S. Datta, S. Yu",
+    "tags": ["Invited — top-ranked student paper at IEDM 2025"],
+    "vol": "vol. 73, no. 5, pp. 3091–3101"
+  },
+  {
+    "year": "2025",
+    "venue": "IEEE International Electron Devices Meeting",
+    "venueShort": "IEDM",
+    "title": "Monolithic 3D Integration of Dual-Gated ALD Oxide-Channel Non-Volatile Capacitive Memory on 40 nm Si CMOS for Digital Compute-in-Memory",
+    "authors": "J. Lee, C. Zhang, S. Park, H. Park, T.-H. Kim, L. Liu, E. Ambrosi, M. Song, X. Bao, M.-F. Chang, S. Datta, S. Yu",
+    "tags": ["Conference highlight paper", "Nominated — Roger A. Haken Best Student Paper Award"]
+  },
+  {
+    "year": "2025",
+    "venue": "IEEE International Electron Devices Meeting",
+    "venueShort": "IEDM",
+    "title": "Array-Level Demonstration of Charge-Domain In Memory Search using Back-End-of-Line Compatible Ferroelectric Nonvolatile Capacitors",
+    "authors": "O. Phadke*, J. Lee*, P.-K. Hsu, C. Zhang, A. Khan, S. Datta, S. Yu",
+    "tags": ["Equal contribution"]
+  },
+  {
+    "year": "2025",
+    "venue": "IEEE Transactions on Very Large Scale Integration Systems",
+    "venueShort": "T-VLSI",
+    "title": "3-D Digital Compute-in-Memory Benchmark With A5 CFET Technology: An Extension to Lookup-Table-Based Design",
+    "authors": "J. Lee, M. Shon, F. Waqar, S. Yu",
+    "tags": ["Accepted"]
+  },
+  {
+    "year": "2024",
+    "venue": "IEEE International Electron Devices Meeting",
+    "venueShort": "IEDM",
+    "title": "BEOL-compatible non-volatile capacitive synapse with ALD W-doped In₂O₃ semiconductor layer",
+    "authors": "J. Lee, C. Zhang, M. Shon, J. Read, S. Deng, O. Phadke, P. V. Ravindran, M. Tian, Y.-C. Luo, T.-H. Kim, A. I. Khan, S. Datta, S. Yu",
+    "tags": []
+  },
+  {
+    "year": "2024",
+    "venue": "IEEE Symposium on VLSI Technology and Circuits",
+    "venueShort": "VLSI",
+    "title": "Demonstration of on-chip switched-capacitor DC-DC converters using BEOL compatible oxide power transistors and superlattice MIM capacitors",
+    "authors": "S. Deng*, J. Kwak*, J. Lee*, D. Chakraborty, J. Shin, O. Phadke, S. G. Kirtania, C. Zhang, K. A. Aabrar, S. Yu, S. Datta",
+    "tags": ["Equal contribution"]
+  },
+  {
+    "year": "2024",
+    "venue": "IEEE Transactions on Circuits and Systems I: Regular Papers",
+    "venueShort": "TCAS-I",
+    "title": "NeuroSim V1.4: Extending Technology Support for Digital Compute-in-Memory Towards 1 nm Node",
+    "authors": "J. Lee, A. Lu, W. Li, S. Yu",
+    "tags": [],
+    "vol": "vol. 71, no. 4, pp. 1733–1744"
+  },
+  {
+    "year": "2024",
+    "venue": "IEEE Transactions on Electron Devices",
+    "venueShort": "TED",
+    "title": "Monolithic switched-capacitor DC-DC voltage converters using BEOL-compatible oxide power transistors and superlattice MIM capacitors",
+    "authors": "S. Deng*, J. Kwak*, J. Lee*, D. Chakraborty, J. Shin, O. Phadke, S. G. Kirtania, C. Zhang, K. A. Aabrar, S. Yu, S. Datta",
+    "tags": ["Equal contribution"],
+    "vol": "vol. 71, no. 12, pp. 7999–8006"
+  },
+  {
+    "year": "2024",
+    "venue": "Nature Reviews Electrical Engineering",
+    "venueShort": "Nat. Rev. EE",
+    "title": "High-speed emerging memories for AI hardware accelerators",
+    "authors": "A. Lu*, J. Lee*, T.-H. Kim*, M. Karim, R. Park, H. Simka, S. Yu",
+    "tags": ["Equal contribution", "Invited review"],
+    "vol": "vol. 1, pp. 24–34"
+  },
+  {
+    "year": "2024",
+    "venue": "IEEE Device Research Conference",
+    "venueShort": "DRC",
+    "title": "Optimization of backside of silicon-compatible high voltage superlattice capacitor for 12V-to-6V on-chip voltage conversion",
+    "authors": "J. Lee, S. Deng, J. Kwak, M. Shon, S. Datta, S. Yu",
+    "tags": ["Nominated — Best Oral Presentation Award (top 15 finalist)"]
+  },
+  {
+    "year": "2023",
+    "venue": "IEEE International Electron Devices Meeting",
+    "venueShort": "IEDM",
+    "title": "BEOL compatible oxide power transistors for on-chip voltage conversion in heterogenous 3D (H3D) integrated circuits",
+    "authors": "S. Deng, J. Kwak, J. Lee, K. A. Aabrar, T.-H. Kim, S. Kirtania, G. Choe, C. Zhang, W. Li, O. Phadke, S. Yu, S. Datta",
+    "tags": []
+  }
+]
