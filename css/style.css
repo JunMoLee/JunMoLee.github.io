@@ -236,16 +236,18 @@ button { font: inherit; background: none; border: none; cursor: pointer; color: 
 .nav-links {
   display: flex;
   align-items: center;
-  gap: var(--sp-6);
+  gap: var(--sp-4);
+  flex-wrap: nowrap;
 }
 .nav-links a {
   font-family: var(--font-mono);
-  font-size: var(--fs-xs);
-  letter-spacing: 0.04em;
+  font-size: 0.68rem;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
   color: var(--ink-soft);
   position: relative;
   padding-block: var(--sp-1);
+  white-space: nowrap;
   transition: color var(--dur-fast) var(--ease);
 }
 .nav-links a::after {
@@ -289,7 +291,7 @@ button { font: inherit; background: none; border: none; cursor: pointer; color: 
 .nav-toggle[aria-expanded="true"] span::before { top: 0; transform: rotate(45deg); }
 .nav-toggle[aria-expanded="true"] span::after { top: 0; transform: rotate(-45deg); }
 
-@media (max-width: 860px) {
+@media (max-width: 1180px) {
   .nav-links { display: none; }
   .nav-toggle { display: block; }
   .nav-inner .nav-cta { display: none; }
@@ -318,7 +320,7 @@ button { font: inherit; background: none; border: none; cursor: pointer; color: 
   }
   .mobile-menu .nav-cta { align-self: flex-start; margin-top: var(--sp-3); }
 }
-@media (min-width: 861px) {
+@media (min-width: 1181px) {
   .mobile-menu { display: none; }
 }
 

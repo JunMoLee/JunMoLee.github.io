@@ -243,7 +243,18 @@
       })
     );
 
-    const sections = ["about", "research", "publications", "experience", "presentations", "contact"]
+    const sections = [
+      "about",
+      "research",
+      "publications",
+      "experience",
+      "education",
+      "presentations",
+      "teaching",
+      "skills",
+      "awards",
+      "contact"
+    ]
       .map((id) => document.getElementById(id))
       .filter(Boolean);
     const links = Array.from(document.querySelectorAll(".nav-links a"));
