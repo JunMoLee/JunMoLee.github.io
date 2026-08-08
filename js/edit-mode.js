@@ -193,6 +193,11 @@
     panel.querySelector("#editToggleBtn").addEventListener("click", toggleEditing);
     panel.querySelector("#editSaveBtn").addEventListener("click", saveChanges);
     panel.querySelector("#publishBtn").addEventListener("click", publishChanges);
+
+    // "Edit Website.bat" opens the site with ?edit=1 to skip the extra click.
+    if (new URLSearchParams(window.location.search).get("edit") === "1") {
+      toggleEditing();
+    }
   });
 
   window.addEventListener("beforeunload", (e) => {

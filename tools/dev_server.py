@@ -187,10 +187,28 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             super().log_message(fmt, *args)
 
 
+class ExclusiveHTTPServer(http.server.HTTPServer):
+    # HTTPServer defaults allow_reuse_address=True, which on Windows lets a
+    # second process silently bind the same port instead of erroring — so
+    # double-launching the editor would start two overlapping servers with
+    # no warning. Disabling it makes a duplicate launch fail loudly instead,
+    # which main() below turns into a friendly message.
+    allow_reuse_address = False
+
+
 def main():
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 8080
     handler = functools.partial(Handler, directory=str(PROJECT_ROOT))
-    with http.server.HTTPServer(("127.0.0.1", port), handler) as httpd:
+    try:
+        httpd = ExclusiveHTTPServer(("127.0.0.1", port), handler)
+    except OSError as e:
+        if e.errno in (48, 98, 10048):  # macOS, Linux, Windows "address in use"
+            print(f"Port {port} is already in use — the server is probably already running.")
+            print(f"Just open http://localhost:{port}/?edit=1 in your browser.")
+            return
+        raise
+
+    with httpd:
         print(f"Serving {PROJECT_ROOT} at http://localhost:{port}/  (Ctrl+C to stop)")
         print("Live editing enabled — see the 'Local Editor' panel bottom-right in the browser.")
         try:
