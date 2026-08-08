@@ -429,6 +429,8 @@ button { font: inherit; background: none; border: none; cursor: pointer; color: 
   height: 100%;
   object-fit: cover;
   display: block;
+  transform: scale(var(--img-scale, 1));
+  transform-origin: center;
 }
 .figure-placeholder {
   display: flex;
@@ -474,6 +476,32 @@ body.local-editing .figure-frame::after {
   pointer-events: none;
 }
 body.local-editing .figure-frame:hover::after { opacity: 1; }
+
+/* Zoom slider — shrinks the image within its fixed-size frame (object-fit:
+   cover otherwise always fills the box exactly, so this is the only way to
+   leave breathing room around a figure without resizing the frame itself). */
+.figure-zoom-control {
+  display: none;
+  position: absolute;
+  left: var(--sp-3);
+  right: var(--sp-3);
+  bottom: var(--sp-3);
+  z-index: 2;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 0.35rem var(--sp-3);
+  background: rgba(20, 18, 15, 0.72);
+  cursor: default;
+}
+body.local-editing .figure-frame.has-image .figure-zoom-control { display: flex; }
+.figure-zoom-control input[type="range"] { flex: 1; accent-color: var(--accent); cursor: pointer; }
+.figure-zoom-control .figure-zoom-value {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: #fff;
+  min-width: 2.6em;
+  text-align: right;
+}
 body.local-editing .figure-frame.upload-hover {
   outline: 2px dashed var(--accent);
   outline-offset: -2px;

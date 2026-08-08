@@ -136,9 +136,11 @@
             existing link and hit 🔗 again to edit or remove it). Click or
             drag-and-drop an image onto any figure box to set/replace it —
             the file is written to assets/images/ and committed like anything
-            else. Drag the bottom-right corner of figure boxes or text blocks
-            to resize — resizing sets a fixed size that won't shrink for
-            small screens, so check mobile after resizing anything.
+            else. Once a figure has an image, a zoom slider appears at the
+            bottom of the box to shrink it within the frame (the frame's own
+            size is unaffected — drag its bottom-right corner to resize
+            that). Resizing sets a fixed size that won't shrink for small
+            screens, so check mobile after resizing anything.
           </div>
         </div>
 
@@ -252,11 +254,15 @@
       Array.from(node.children).forEach((child) => {
         if (DYNAMIC_IDS.includes(child.id)) return;
         if (child.id === "localEditor") return;
-        // Instructional placeholder shown until a real figure file exists —
-        // its filename label is decorative, not something to hand-edit, and
-        // it's exactly where a dropped image file should land (see
-        // setupFigureUploads()), not into a contentEditable text run.
-        if (child.classList.contains("figure-placeholder")) return;
+        // Figures are never text-editable content — they're handled entirely
+        // by setupFigureUploads()/setupFigureZoom() via click/drag-drop, not
+        // contentEditable. Excluding the whole frame (not just its children)
+        // matters: with nothing editable inside, the generic fallback below
+        // would otherwise make the *entire* frame one big contentEditable
+        // region, which is exactly what lets a dropped image file get
+        // silently inserted as a base64 blob by the browser's native
+        // drag-drop-into-contenteditable behavior instead of being uploaded.
+        if (child.classList.contains("figure-frame")) return;
         if (child.textContent.trim() === "") return; // decorative/empty, nothing to edit
         // Explicitly-authored prose blocks (data-edit="...") are always a
         // single leaf, however much rich-text markup (links, colored spans,
@@ -338,8 +344,9 @@
         const file = e.dataTransfer.files && e.dataTransfer.files[0];
         if (file) uploadFigureImage(frame, img, file);
       });
-      frame.addEventListener("click", () => {
+      frame.addEventListener("click", (e) => {
         if (!editing) return;
+        if (e.target.closest(".figure-zoom-control")) return; // dragging the zoom slider, not picking a file
         const input = document.createElement("input");
         input.type = "file";
         input.accept = "image/*";
@@ -348,6 +355,41 @@
         });
         input.click();
       });
+    });
+  }
+
+  // --- Figure zoom (shrink the image within its fixed-size frame) ----------
+  // object-fit: cover always fills the frame exactly, so the only way to
+  // leave breathing room around a figure without resizing the box itself is
+  // to scale the image down within it.
+  function setupFigureZoom() {
+    document.querySelectorAll(".figure-frame").forEach((frame) => {
+      if (frame.dataset.zoomWired) return;
+      frame.dataset.zoomWired = "1";
+      const img = frame.querySelector("img");
+      if (!img) return;
+
+      const current = parseFloat(img.style.getPropertyValue("--img-scale")) || 1;
+      const control = el(`
+        <div class="figure-zoom-control">
+          <input type="range" min="0.3" max="1" step="0.01" value="${current}">
+          <span class="figure-zoom-value">${Math.round(current * 100)}%</span>
+        </div>
+      `);
+      const range = control.querySelector("input");
+      const label = control.querySelector(".figure-zoom-value");
+      range.addEventListener("input", () => {
+        img.style.setProperty("--img-scale", range.value);
+        label.textContent = `${Math.round(range.value * 100)}%`;
+        dirty = true;
+        setSaveEnabled(true);
+      });
+      // Dragging the slider shouldn't also drag-select page text or start
+      // a native browser image drag on the figure underneath it.
+      ["mousedown", "click", "dragstart"].forEach((evt) =>
+        control.addEventListener(evt, (e) => e.stopPropagation())
+      );
+      frame.appendChild(control);
     });
   }
 
@@ -526,6 +568,11 @@
     // placeholder for one that was removed.
     stripClass(clone, ".figure-frame img.is-broken", "is-broken");
     stripClass(clone, ".figure-frame.has-image", "has-image");
+    stripClass(clone, ".figure-frame.upload-hover", "upload-hover");
+    clone.querySelectorAll("[data-upload-wired], [data-zoom-wired]").forEach((el) => {
+      el.removeAttribute("data-upload-wired");
+      el.removeAttribute("data-zoom-wired");
+    });
   }
 
   function buildSaveableHtml() {
@@ -535,7 +582,10 @@
       if (node) node.innerHTML = DYNAMIC_PLACEHOLDERS[id];
     });
     // Resize-drag inline width/height on .figure-frame/.hero-content/etc.
-    // are real user edits and are intentionally kept as-is.
+    // are real user edits and are intentionally kept as-is. The --img-scale
+    // custom property set by the zoom slider is likewise kept; only the
+    // slider UI itself is editor-only and gets removed.
+    clone.querySelectorAll(".figure-zoom-control").forEach((el) => el.remove());
     stripRuntimeState(clone);
     return clone.outerHTML;
   }
@@ -846,6 +896,27 @@
     document.body.appendChild(panel);
     document.head.appendChild(style);
     setupFigureUploads();
+    setupFigureZoom();
+
+    // Belt-and-suspenders: even with figure-frame excluded from
+    // collectLeaves, block the browser's native "insert dropped file as a
+    // base64 image" behavior anywhere else in the editable page too, so a
+    // slightly mis-aimed drop can never again corrupt page text instead of
+    // uploading nothing.
+    document.addEventListener("dragover", (e) => {
+      if (!editing) return;
+      if (e.dataTransfer && Array.from(e.dataTransfer.types || []).includes("Files")) {
+        e.preventDefault();
+      }
+    });
+    document.addEventListener("drop", (e) => {
+      if (!editing) return;
+      if (e.target.closest && e.target.closest(".figure-frame")) return; // handled there
+      if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) {
+        e.preventDefault();
+        setStatus("Drop images onto a figure box, not page text.", true);
+      }
+    });
 
     panel.querySelector("#editToggleBtn").addEventListener("click", toggleEditing);
     panel.querySelector("#editSaveBtn").addEventListener("click", saveChanges);
