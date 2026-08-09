@@ -62,6 +62,13 @@
     if (footerName) footerName.textContent = `© ${site.year} ${site.name}`;
     if (navCv) navCv.setAttribute("href", site.cv);
     if (mobileCv) mobileCv.setAttribute("href", site.cv);
+
+    // Overall page width — edit "pageWidthPx" in data/site.json (via the
+    // local editor's LISTS panel) to change how wide the site's content
+    // column is, without touching any CSS.
+    if (site.pageWidthPx) {
+      document.documentElement.style.setProperty("--content-max", `${parseInt(site.pageWidthPx, 10)}px`);
+    }
   }
 
   /* ---------- Publications ---------- */
