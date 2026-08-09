@@ -600,6 +600,36 @@ body.local-editing [data-edit] {
 .resize-grip:hover { opacity: 1; }
 body.local-editing .resize-grip { display: block; }
 .resize-grip.is-dragging { opacity: 1; }
+/* Move handle: the third corner (top-right; resize already owns the
+   other two) drags the box via margin instead of width/height — see
+   wireMoveHandle in edit-mode.js. A circle with a plus-shaped cutout
+   rather than another triangle, so it doesn't read as a third resize
+   direction. */
+.move-grip {
+  display: none;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 18px;
+  height: 18px;
+  cursor: move;
+  opacity: 0.7;
+  z-index: 6;
+  touch-action: none;
+  background: var(--accent);
+  border-radius: 50%;
+}
+.move-grip::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  background:
+    linear-gradient(var(--paper) 0 0) center / 2px 8px no-repeat,
+    linear-gradient(var(--paper) 0 0) center / 8px 2px no-repeat;
+}
+.move-grip:hover { opacity: 1; }
+body.local-editing .move-grip { display: block; }
+.move-grip.is-dragging { opacity: 1; }
 /* [data-edit] leaves are the individual text holders (a heading, a single
    paragraph, ...) — resizable on their own now, not just as part of their
    parent block, so e.g. the hero name can be sized independently from the

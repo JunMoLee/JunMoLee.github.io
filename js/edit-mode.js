@@ -138,11 +138,14 @@
             the file is written to assets/images/ and committed like anything
             else. Once a figure has an image, a zoom slider appears at the
             bottom of the box to shrink it within the frame (the frame's own
-            size is unaffected — drag its bottom-right corner to resize
-            that). Every text block has its own resize handle too, so a
-            heading or paragraph can be sized independently from the rest.
-            Resizing sets a fixed size that won't shrink for small screens,
-            so check mobile after resizing anything.
+            size is unaffected — drag its bottom-right or top-left corner to
+            resize that). Every text block has its own resize handles too,
+            so a heading or paragraph can be sized independently from the
+            rest. Resizing sets a fixed size that won't shrink for small
+            screens, so check mobile after resizing anything. A third
+            handle — the small circle at the top-right corner — moves a
+            box instead of resizing it; drag it to reposition without
+            changing its size.
           </div>
         </div>
 
@@ -487,6 +490,60 @@
     ["click", "dragstart"].forEach((evt) => grip.addEventListener(evt, (e) => e.stopPropagation()));
   }
 
+  // A pure reposition, separate from resizing: drags the box via
+  // margin-left/margin-top only, width/height untouched, so it stays in
+  // normal flow (still reserves its own space, still pushes/wraps
+  // neighbors the same as an unmoved box would) instead of turning into
+  // a free-floating position:absolute element.
+  //
+  // .hero-figure gets the same horizontal exception as its resize grip:
+  // it's the trailing item in the .hero-grid flex row, so a free
+  // margin-left here would shift it left by a fixed amount that sits
+  // outside the row's flex-shrink accounting — exactly the bug a
+  // negative resize margin caused before. Vertical movement doesn't
+  // compete with .hero-content for space, so it stays free.
+  function wireMoveHandle(target) {
+    const skipHorizontalMove = target.classList.contains("hero-figure");
+    const handle = document.createElement("div");
+    handle.className = "move-grip";
+    handle.title = "Drag to move";
+    handle.contentEditable = "false";
+    target.appendChild(handle);
+
+    let startX = 0;
+    let startY = 0;
+    let startML = 0;
+    let startMT = 0;
+
+    function onMove(e) {
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      if (!skipHorizontalMove) target.style.marginLeft = `${Math.round(startML + dx)}px`;
+      target.style.marginTop = `${Math.round(startMT + dy)}px`;
+    }
+    function onUp() {
+      document.removeEventListener("pointermove", onMove);
+      document.removeEventListener("pointerup", onUp);
+      handle.classList.remove("is-dragging");
+      dirty = true;
+      setSaveEnabled(true);
+    }
+    handle.addEventListener("pointerdown", (e) => {
+      if (!editing) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const computed = getComputedStyle(target);
+      startX = e.clientX;
+      startY = e.clientY;
+      startML = parseFloat(target.style.marginLeft || computed.marginLeft) || 0;
+      startMT = parseFloat(target.style.marginTop || computed.marginTop) || 0;
+      handle.classList.add("is-dragging");
+      document.addEventListener("pointermove", onMove);
+      document.addEventListener("pointerup", onUp);
+    });
+    ["click", "dragstart"].forEach((evt) => handle.addEventListener(evt, (e) => e.stopPropagation()));
+  }
+
   function setupResizeHandles() {
     document.querySelectorAll(RESIZE_SELECTOR).forEach((target) => {
       // The hero image is resized via its .hero-figure wrapper, not this
@@ -496,6 +553,7 @@
       target.dataset.resizeWired = "1";
       wireResizeGrip(target, "br");
       wireResizeGrip(target, "tl");
+      wireMoveHandle(target);
     });
   }
 
@@ -693,7 +751,7 @@
     // custom property set by the zoom slider is likewise kept; only the
     // slider UI itself is editor-only and gets removed.
     clone.querySelectorAll(".figure-zoom-control").forEach((el) => el.remove());
-    clone.querySelectorAll(".resize-grip").forEach((el) => el.remove());
+    clone.querySelectorAll(".resize-grip, .move-grip").forEach((el) => el.remove());
     stripRuntimeState(clone);
     return clone.outerHTML;
   }
