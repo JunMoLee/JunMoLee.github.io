@@ -3,6 +3,10 @@
 /Google_Scholar.txt
 /*.pdf
 !/assets/cv/Junmo-Lee-CV.pdf
+/*.pptx
+
+# Office lock files (created while a .pptx/.docx/.xlsx is open)
+~$*
 
 # OS junk
 .DS_Store
