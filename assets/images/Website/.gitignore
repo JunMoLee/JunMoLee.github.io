@@ -1,0 +1,31 @@
+# Source materials — not for public repo
+/CV_Junmo_Device_v2-4_260802.pdf
+/Google_Scholar.txt
+/*.pdf
+!/assets/cv/Junmo-Lee-CV.pdf
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# Editor
+.vscode/
+*.swp
+
+# Local Claude Code tool config (not part of the site)
+.claude/
+
+# Python
+__pycache__/
+*.pyc
+
+# Local scratch
+_*.png
+_*.pdf
+*.tmp
+
+# Env / secrets
+.env
+.env.*
