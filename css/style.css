@@ -527,18 +527,39 @@ body.local-editing .figure-frame.upload-hover {
   outline-offset: -2px;
 }
 
-/* Drag-resize handles, active only while the local editor is in edit mode.
+/* Resizable boxes, active only while the local editor is in edit mode.
    Dragging writes an explicit inline width/height, which is a fixed size —
    it will no longer respond to smaller screens once saved, so resize the
-   figure boxes with that in mind (see js/edit-mode.js panel note). */
+   figure boxes with that in mind (see js/edit-mode.js panel note).
+   Uses a custom handle (.resize-grip, wired in edit-mode.js) instead of the
+   native CSS `resize` property — the native corner grip is a tiny,
+   OS-rendered hit target that's easy to miss entirely, and it fights grid
+   item stretch-alignment in some browsers even when it does register. A
+   plain draggable div sidesteps both problems. */
 body.local-editing .figure-frame,
 body.local-editing .hero-content,
 body.local-editing .about-body,
 body.local-editing .story-content,
 body.local-editing [data-edit] {
-  resize: both;
   overflow: auto;
+  position: relative;
 }
+.resize-grip {
+  display: none;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 18px;
+  height: 18px;
+  cursor: nwse-resize;
+  background: linear-gradient(135deg, transparent 50%, var(--accent) 50%);
+  opacity: 0.7;
+  z-index: 6;
+  touch-action: none;
+}
+.resize-grip:hover { opacity: 1; }
+body.local-editing .resize-grip { display: block; }
+.resize-grip.is-dragging { opacity: 1; }
 /* [data-edit] leaves are the individual text holders (a heading, a single
    paragraph, ...) — resizable on their own now, not just as part of their
    parent block, so e.g. the hero name can be sized independently from the

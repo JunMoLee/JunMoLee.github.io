@@ -395,6 +395,65 @@
     });
   }
 
+  // --- Custom resize handles -------------------------------------------
+  // Replaces the native CSS `resize: both` corner grip, which is a tiny
+  // OS-rendered hit target (easy to miss) and can silently fail to apply a
+  // dragged width to a CSS grid item in some browsers. A plain draggable
+  // div, driving the same "write an explicit inline width/height" result
+  // via ordinary pointer events, works the same way everywhere.
+  const RESIZE_SELECTOR = ".figure-frame, .hero-content, .about-body, .story-content, [data-edit]";
+
+  function setupResizeHandles() {
+    document.querySelectorAll(RESIZE_SELECTOR).forEach((target) => {
+      if (target.dataset.resizeWired) return;
+      target.dataset.resizeWired = "1";
+
+      const grip = document.createElement("div");
+      grip.className = "resize-grip";
+      // Several targets (any [data-edit] leaf) become contentEditable —
+      // mark the grip as a non-editable island so it can't be typed into,
+      // selected as text, or deleted by the user editing around it.
+      grip.contentEditable = "false";
+      target.appendChild(grip);
+
+      let startX = 0;
+      let startY = 0;
+      let startW = 0;
+      let startH = 0;
+
+      function onMove(e) {
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        target.style.width = `${Math.max(40, Math.round(startW + dx))}px`;
+        target.style.height = `${Math.max(24, Math.round(startH + dy))}px`;
+      }
+      function onUp() {
+        document.removeEventListener("pointermove", onMove);
+        document.removeEventListener("pointerup", onUp);
+        grip.classList.remove("is-dragging");
+        dirty = true;
+        setSaveEnabled(true);
+      }
+      grip.addEventListener("pointerdown", (e) => {
+        if (!editing) return;
+        e.preventDefault();
+        e.stopPropagation();
+        const rect = target.getBoundingClientRect();
+        startX = e.clientX;
+        startY = e.clientY;
+        startW = rect.width;
+        startH = rect.height;
+        grip.classList.add("is-dragging");
+        document.addEventListener("pointermove", onMove);
+        document.addEventListener("pointerup", onUp);
+      });
+      // Don't let a click/drag on the grip itself select page text or
+      // trigger whatever the target element normally does on click (e.g.
+      // a figure-frame's upload picker).
+      ["click", "dragstart"].forEach((evt) => grip.addEventListener(evt, (e) => e.stopPropagation()));
+    });
+  }
+
   function toggleEditing() {
     editing = !editing;
     document.body.classList.toggle("local-editing", editing);
@@ -571,9 +630,10 @@
     stripClass(clone, ".figure-frame img.is-broken", "is-broken");
     stripClass(clone, ".figure-frame.has-image", "has-image");
     stripClass(clone, ".figure-frame.upload-hover", "upload-hover");
-    clone.querySelectorAll("[data-upload-wired], [data-zoom-wired]").forEach((el) => {
+    clone.querySelectorAll("[data-upload-wired], [data-zoom-wired], [data-resize-wired]").forEach((el) => {
       el.removeAttribute("data-upload-wired");
       el.removeAttribute("data-zoom-wired");
+      el.removeAttribute("data-resize-wired");
     });
   }
 
@@ -588,6 +648,7 @@
     // custom property set by the zoom slider is likewise kept; only the
     // slider UI itself is editor-only and gets removed.
     clone.querySelectorAll(".figure-zoom-control").forEach((el) => el.remove());
+    clone.querySelectorAll(".resize-grip").forEach((el) => el.remove());
     stripRuntimeState(clone);
     return clone.outerHTML;
   }
@@ -899,6 +960,7 @@
     document.head.appendChild(style);
     setupFigureUploads();
     setupFigureZoom();
+    setupResizeHandles();
 
     // Belt-and-suspenders: even with figure-frame excluded from
     // collectLeaves, block the browser's native "insert dropped file as a
