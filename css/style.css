@@ -51,7 +51,7 @@
   --fs-xs: 0.75rem;
 
   /* Layout */
-  --content-max: 1280px;
+  --content-max: 1440px;
   --prose-max: 42rem;
   --gutter: clamp(1.25rem, 5vw, 4rem);
   --radius: 3px;
