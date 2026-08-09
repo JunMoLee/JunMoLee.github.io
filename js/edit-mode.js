@@ -431,6 +431,40 @@
   // already shrunk, so the two can end up overlapping regardless of
   // window width. Skipping the horizontal half of the margin trick for
   // this one target keeps it inside the row's own shrink math.
+  // A [data-edit] leaf's own max-width:100% (see style.css) is relative to
+  // its immediate parent, which keeps it from spilling past that parent —
+  // correct, since it's what stops e.g. a story paragraph from overlapping
+  // the figure in the grid column next to it. But when that parent is
+  // itself one of the boxes with its own resize grip, dragging the leaf
+  // wider than the parent's *current* size should grow the parent to
+  // match rather than just clipping silently: the parent already has its
+  // own max-width:100% up the chain (relative to ITS parent), so bumping
+  // it here can never push the growth past whatever actually has a
+  // sibling to protect — it just stops the cap from biting before that.
+  const TEXT_CAPPING_PARENTS = ".hero-content, .about-body, .story-content";
+  function growCappingParent(target, newW) {
+    const parent = target.parentElement;
+    if (!parent || !parent.matches(TEXT_CAPPING_PARENTS)) return;
+    if (newW > parent.getBoundingClientRect().width) {
+      parent.style.width = `${newW}px`;
+      liftProseMaxWidth(parent);
+    }
+  }
+
+  // Several text elements (.about-body, .story-title, .story-text, ...)
+  // carry their own deliberate max-width in rem for prose readability —
+  // a separate, later rule that wins over the generic max-width:100%
+  // resize-safety cap regardless of what width gets dragged in, which is
+  // why resizing them visibly does nothing. Pin max-width to 100% inline
+  // once a box is actually resized: inline beats the rem rule outright
+  // (so the drag takes effect), but 100% is the same *value* the safety
+  // cap already used, so it still shrinks correctly on a narrower parent
+  // instead of becoming a fixed ceiling that stops responding to the
+  // window like the figure-frame bug earlier in this session.
+  function liftProseMaxWidth(el) {
+    el.style.maxWidth = "100%";
+  }
+
   function wireResizeGrip(target, corner) {
     const skipHorizontalMargin = target.classList.contains("hero-figure");
     const grip = document.createElement("div");
@@ -456,10 +490,12 @@
       const newH = Math.max(24, Math.round(startH + growSign * dy));
       target.style.width = `${newW}px`;
       target.style.height = `${newH}px`;
+      liftProseMaxWidth(target);
       if (corner === "tl") {
         if (!skipHorizontalMargin) target.style.marginLeft = `${startML - (newW - startW)}px`;
         target.style.marginTop = `${startMT - (newH - startH)}px`;
       }
+      growCappingParent(target, newW);
     }
     function onUp() {
       document.removeEventListener("pointermove", onMove);
