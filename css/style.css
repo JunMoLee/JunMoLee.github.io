@@ -37,8 +37,8 @@
   --sp-6: 2rem;
   --sp-7: 3rem;
   --sp-8: 4rem;
-  --sp-9: 6rem;
-  --sp-10: 8.5rem;
+  --sp-9: clamp(2rem, 4vw, 3.25rem);
+  --sp-10: clamp(3rem, 6vw, 5rem);
 
   /* Type scale (fluid) */
   --fs-hero: clamp(2.6rem, 2.1rem + 3.4vw, 5.1rem);
@@ -447,7 +447,7 @@ button { font: inherit; background: none; border: none; cursor: pointer; color: 
 .figure-frame img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
   transform: scale(var(--img-scale, 1));
   transform-origin: center;
