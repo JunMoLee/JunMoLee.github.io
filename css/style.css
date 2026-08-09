@@ -350,8 +350,17 @@ button { font: inherit; background: none; border: none; cursor: pointer; color: 
    instead of the flex shorthand's basis slot) so that a resize-grip-set
    inline width on either box overrides the default proportions below
    exactly like it did as an explicit grid-column width before. */
-.hero-content { flex: 1 1 auto; width: 55%; min-width: 0; }
-.hero-figure { flex: 1 1 auto; width: 30%; min-width: 0; }
+/* min-width floors what .hero-content can be squeezed to when
+   .hero-figure is dragged large — without one, flex-shrink is free to
+   take it all the way to 0 and the intro copy vanishes entirely. */
+.hero-content { flex: 1 1 auto; width: 55%; min-width: 16rem; }
+/* aspect-ratio only matters before .hero-figure has ever been dragged
+   (no inline width/height yet): its .figure-frame child is width/height
+   100% of it (see below), so with no inline size and no fallback shape
+   here it would collapse to 0 height. Matches .figure-frame's own
+   default aspect-ratio so an untouched hero figure looks the same as
+   before this became resizable at the .hero-figure level. */
+.hero-figure { flex: 1 1 auto; width: 30%; min-width: 0; aspect-ratio: 8 / 5; }
 .hero-eyebrow {
   font-family: var(--font-mono);
   font-size: var(--fs-xs);
@@ -614,6 +623,7 @@ body.local-editing [data-edit] {
    therefore how large a figure inside them can be dragged — scales with
    the page width setting (data/site.json → pageWidthPx) and the window,
    not a fixed ceiling. */
+.figure-frame,
 .hero-content,
 .about-body,
 .story-content,
@@ -621,21 +631,17 @@ body.local-editing [data-edit] {
   max-width: 100%;
   box-sizing: border-box;
 }
-/* .figure-frame gets a looser cap than the 100%-of-parent rule above:
-   a figure is meant to be draggable well past its own flex/grid column
-   (e.g. .hero-figure's 30% share of the hero row) — up to and overlapping
-   neighboring content on purpose — so capping it at its immediate
-   parent's width defeated the point. But it still needs *some* cap tied
-   to the actual viewport, or a size dragged in on a wide window doesn't
-   shrink at all as the window narrows and starts overlapping content the
-   user never asked it to overlap. Pinning the ceiling to the page's own
-   content width (same formula .container uses) rather than the parent's
-   width gives it a much bigger ceiling while still shrinking in lockstep
-   with a genuinely narrower window. */
-.figure-frame {
-  max-width: min(calc(100vw - 2 * var(--gutter)), calc(var(--content-max) - 2 * var(--gutter)));
-  box-sizing: border-box;
-}
+/* The hero figure is the one figure-frame that needs to grow past its own
+   immediate parent's share on purpose (.hero-figure defaults to just 30%
+   of the row) — so instead of resizing the frame itself, its grip resizes
+   .hero-figure (see RESIZE_SELECTOR in edit-mode.js), which is a normal
+   flex-shrink:1 sibling of .hero-content. That makes the row's own
+   flexbox shrink logic do the "figure and text shrink together" work for
+   free: grow the figure, .hero-content gives up exactly that much space
+   (down to its min-width below), and everything still fits at any window
+   width without the two ever overlapping. The frame just fills whatever
+   box .hero-figure ends up being. */
+.hero-figure > .figure-frame { width: 100%; height: 100%; }
 
 @media (max-width: 980px) {
   .hero-grid { flex-direction: column; }

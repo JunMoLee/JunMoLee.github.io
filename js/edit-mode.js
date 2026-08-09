@@ -401,14 +401,35 @@
   // dragged width to a CSS grid item in some browsers. A plain draggable
   // div, driving the same "write an explicit inline width/height" result
   // via ordinary pointer events, works the same way everywhere.
-  const RESIZE_SELECTOR = ".figure-frame, .hero-content, .about-body, .story-content, [data-edit]";
+  // .hero-figure (not its inner .figure-frame) is the grip target for the
+  // hero image specifically: it's a flex-shrink:1 sibling of .hero-content
+  // in .hero-grid, so resizing IT (instead of the frame inside it) lets
+  // the row's own flexbox shrink math keep the figure and the intro copy
+  // from ever overlapping — see the .hero-figure > .figure-frame rule in
+  // style.css. Every other .figure-frame (story figures, the avatar) has
+  // no such sibling to make room for, so it stays resizable directly
+  // (filtered out below rather than folded into this selector with a
+  // compound :not(), which is harder to read for a one-off exclusion).
+  const RESIZE_SELECTOR = ".figure-frame, .hero-content, .hero-figure, .about-body, .story-content, [data-edit]";
 
   // corner: "br" grows down/right in place; "tl" grows up/left by growing
   // width/height while pulling the box's own position back with a negative
   // margin, since these targets are normal-flow elements (not absolutely
   // positioned) and only width/height alone would just grow toward br
   // regardless of which corner was dragged.
+  //
+  // .hero-figure is the one exception: it's a flex item sharing a row
+  // with .hero-content (see .hero-grid), and it's the *trailing* item in
+  // that row, so growing its plain width already extends its left edge
+  // into its sibling's space via ordinary flex-shrink — no margin needed.
+  // A negative margin-left on top of that would double-count the growth
+  // and, worse, sit outside flexbox's shrink accounting entirely: it
+  // shifts the box left by a fixed amount no matter how much the row has
+  // already shrunk, so the two can end up overlapping regardless of
+  // window width. Skipping the horizontal half of the margin trick for
+  // this one target keeps it inside the row's own shrink math.
   function wireResizeGrip(target, corner) {
+    const skipHorizontalMargin = target.classList.contains("hero-figure");
     const grip = document.createElement("div");
     grip.className = `resize-grip resize-grip-${corner}`;
     // Several targets (any [data-edit] leaf) become contentEditable —
@@ -433,7 +454,7 @@
       target.style.width = `${newW}px`;
       target.style.height = `${newH}px`;
       if (corner === "tl") {
-        target.style.marginLeft = `${startML - (newW - startW)}px`;
+        if (!skipHorizontalMargin) target.style.marginLeft = `${startML - (newW - startW)}px`;
         target.style.marginTop = `${startMT - (newH - startH)}px`;
       }
     }
@@ -468,6 +489,9 @@
 
   function setupResizeHandles() {
     document.querySelectorAll(RESIZE_SELECTOR).forEach((target) => {
+      // The hero image is resized via its .hero-figure wrapper, not this
+      // inner frame — see the RESIZE_SELECTOR comment above.
+      if (target.classList.contains("figure-frame") && target.parentElement.classList.contains("hero-figure")) return;
       if (target.dataset.resizeWired) return;
       target.dataset.resizeWired = "1";
       wireResizeGrip(target, "br");
