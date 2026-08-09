@@ -331,16 +331,19 @@ button { font: inherit; background: none; border: none; cursor: pointer; color: 
   padding-bottom: var(--sp-9);
   overflow: hidden;
 }
-/* flex + wrap rather than a fixed-column grid: hero-content is freely
-   resizable (see the resize-grip system in edit-mode.js), and a grid
-   column doesn't reflow around a child sized past its track — it just
-   overlaps the next column, silently stealing its clicks. A wrapping flex
-   row instead pushes hero-figure onto its own line once hero-content
-   doesn't fit beside it, so resizing can never cause one box to sit on
-   top of (and intercept clicks meant for) the other. */
+/* flex rather than a fixed-column grid: hero-content is freely resizable
+   (see the resize-grip system in edit-mode.js), and a grid column doesn't
+   reflow around a child sized past its track — it just overlaps the next
+   column, silently stealing its clicks. A flex row, even without
+   wrapping, can't do that: both items always share exactly the row's
+   width, shrinking together (flex-shrink: 1 below) if their combined
+   size doesn't fit. wrap is deliberately NOT used here — flex-wrap
+   decides line breaks using each item's declared width *before*
+   shrinking is applied, so it can send an item to its own line even
+   though both would have fit fine once shrunk. */
 .hero-grid {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: var(--sp-8);
   align-items: center;
 }
@@ -489,6 +492,15 @@ button { font: inherit; background: none; border: none; cursor: pointer; color: 
 }
 .figure-frame.has-image .figure-placeholder { display: none; }
 .figure-frame img.is-broken { display: none; }
+/* The dashed border/background are placeholder chrome — useful cues for
+   an empty box, but once a real image is loaded (object-fit: contain, so
+   it doesn't necessarily fill the frame) they just read as a stray
+   outline hanging past the image's own edges. Drop them once real content
+   is showing. */
+.figure-frame.has-image {
+  border-color: transparent;
+  background: transparent;
+}
 
 /* Click-or-drop image upload, active only while the local editor is
    editing (see setupFigureUploads() in edit-mode.js). */
