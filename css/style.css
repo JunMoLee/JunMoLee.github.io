@@ -553,18 +553,26 @@ body.local-editing [data-edit] {
   padding-bottom: 0.2em;
 }
 
-/* A hand-dragged fixed width (see above) is set in raw pixels, so on its
-   own it would overflow — and look different-sized relative to everything
-   else — on any viewport narrower than that pixel value. This caps it to
-   never exceed its container, on every viewport, whether you're looking at
-   it in the local editor or the published site. */
+/* A hand-dragged fixed width (see above) is set in raw pixels. At desktop
+   widths — where you're actually doing the resizing — that's left
+   unconstrained so you can size a box as large as you want. It's only
+   capped on narrow/phone-width viewports, where an untouched fixed size
+   would otherwise overflow the screen. */
 .figure-frame,
 .hero-content,
 .about-body,
 .story-content,
 [data-edit] {
-  max-width: 100%;
   box-sizing: border-box;
+}
+@media (max-width: 700px) {
+  .figure-frame,
+  .hero-content,
+  .about-body,
+  .story-content,
+  [data-edit] {
+    max-width: 100%;
+  }
 }
 
 @media (max-width: 980px) {
