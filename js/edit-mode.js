@@ -403,54 +403,75 @@
   // via ordinary pointer events, works the same way everywhere.
   const RESIZE_SELECTOR = ".figure-frame, .hero-content, .about-body, .story-content, [data-edit]";
 
+  // corner: "br" grows down/right in place; "tl" grows up/left by growing
+  // width/height while pulling the box's own position back with a negative
+  // margin, since these targets are normal-flow elements (not absolutely
+  // positioned) and only width/height alone would just grow toward br
+  // regardless of which corner was dragged.
+  function wireResizeGrip(target, corner) {
+    const grip = document.createElement("div");
+    grip.className = `resize-grip resize-grip-${corner}`;
+    // Several targets (any [data-edit] leaf) become contentEditable —
+    // mark the grip as a non-editable island so it can't be typed into,
+    // selected as text, or deleted by the user editing around it.
+    grip.contentEditable = "false";
+    target.appendChild(grip);
+
+    const growSign = corner === "tl" ? -1 : 1;
+    let startX = 0;
+    let startY = 0;
+    let startW = 0;
+    let startH = 0;
+    let startML = 0;
+    let startMT = 0;
+
+    function onMove(e) {
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      const newW = Math.max(40, Math.round(startW + growSign * dx));
+      const newH = Math.max(24, Math.round(startH + growSign * dy));
+      target.style.width = `${newW}px`;
+      target.style.height = `${newH}px`;
+      if (corner === "tl") {
+        target.style.marginLeft = `${startML - (newW - startW)}px`;
+        target.style.marginTop = `${startMT - (newH - startH)}px`;
+      }
+    }
+    function onUp() {
+      document.removeEventListener("pointermove", onMove);
+      document.removeEventListener("pointerup", onUp);
+      grip.classList.remove("is-dragging");
+      dirty = true;
+      setSaveEnabled(true);
+    }
+    grip.addEventListener("pointerdown", (e) => {
+      if (!editing) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const rect = target.getBoundingClientRect();
+      const computed = getComputedStyle(target);
+      startX = e.clientX;
+      startY = e.clientY;
+      startW = rect.width;
+      startH = rect.height;
+      startML = parseFloat(target.style.marginLeft || computed.marginLeft) || 0;
+      startMT = parseFloat(target.style.marginTop || computed.marginTop) || 0;
+      grip.classList.add("is-dragging");
+      document.addEventListener("pointermove", onMove);
+      document.addEventListener("pointerup", onUp);
+    });
+    // Don't let a click/drag on the grip itself select page text or
+    // trigger whatever the target element normally does on click (e.g.
+    // a figure-frame's upload picker).
+    ["click", "dragstart"].forEach((evt) => grip.addEventListener(evt, (e) => e.stopPropagation()));
+  }
+
   function setupResizeHandles() {
     document.querySelectorAll(RESIZE_SELECTOR).forEach((target) => {
       if (target.dataset.resizeWired) return;
       target.dataset.resizeWired = "1";
-
-      const grip = document.createElement("div");
-      grip.className = "resize-grip";
-      // Several targets (any [data-edit] leaf) become contentEditable —
-      // mark the grip as a non-editable island so it can't be typed into,
-      // selected as text, or deleted by the user editing around it.
-      grip.contentEditable = "false";
-      target.appendChild(grip);
-
-      let startX = 0;
-      let startY = 0;
-      let startW = 0;
-      let startH = 0;
-
-      function onMove(e) {
-        const dx = e.clientX - startX;
-        const dy = e.clientY - startY;
-        target.style.width = `${Math.max(40, Math.round(startW + dx))}px`;
-        target.style.height = `${Math.max(24, Math.round(startH + dy))}px`;
-      }
-      function onUp() {
-        document.removeEventListener("pointermove", onMove);
-        document.removeEventListener("pointerup", onUp);
-        grip.classList.remove("is-dragging");
-        dirty = true;
-        setSaveEnabled(true);
-      }
-      grip.addEventListener("pointerdown", (e) => {
-        if (!editing) return;
-        e.preventDefault();
-        e.stopPropagation();
-        const rect = target.getBoundingClientRect();
-        startX = e.clientX;
-        startY = e.clientY;
-        startW = rect.width;
-        startH = rect.height;
-        grip.classList.add("is-dragging");
-        document.addEventListener("pointermove", onMove);
-        document.addEventListener("pointerup", onUp);
-      });
-      // Don't let a click/drag on the grip itself select page text or
-      // trigger whatever the target element normally does on click (e.g.
-      // a figure-frame's upload picker).
-      ["click", "dragstart"].forEach((evt) => grip.addEventListener(evt, (e) => e.stopPropagation()));
+      wireResizeGrip(target, "br");
+      wireResizeGrip(target, "tl");
     });
   }
 

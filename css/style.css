@@ -329,7 +329,6 @@ button { font: inherit; background: none; border: none; cursor: pointer; color: 
   position: relative;
   padding-top: calc(4rem + var(--sp-9));
   padding-bottom: var(--sp-9);
-  overflow: hidden;
 }
 /* flex rather than a fixed-column grid: hero-content is freely resizable
    (see the resize-grip system in edit-mode.js), and a grid column doesn't
@@ -572,15 +571,22 @@ body.local-editing [data-edit] {
 .resize-grip {
   display: none;
   position: absolute;
-  right: 0;
-  bottom: 0;
   width: 18px;
   height: 18px;
   cursor: nwse-resize;
-  background: linear-gradient(135deg, transparent 50%, var(--accent) 50%);
   opacity: 0.7;
   z-index: 6;
   touch-action: none;
+}
+.resize-grip-br {
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, transparent 50%, var(--accent) 50%);
+}
+.resize-grip-tl {
+  top: 0;
+  left: 0;
+  background: linear-gradient(315deg, transparent 50%, var(--accent) 50%);
 }
 .resize-grip:hover { opacity: 1; }
 body.local-editing .resize-grip { display: block; }
@@ -607,8 +613,11 @@ body.local-editing [data-edit] {
    responsive flex items (see .hero-grid), so their available width — and
    therefore how large a figure inside them can be dragged — scales with
    the page width setting (data/site.json → pageWidthPx) and the window,
-   not a fixed ceiling. */
-.figure-frame,
+   not a fixed ceiling.
+   .figure-frame is deliberately left out of this cap: unlike the text
+   blocks below (which reflow and need to stay inside their column),
+   a figure is meant to be draggable past its container — up to and
+   overlapping neighboring content — so it has no upper size limit. */
 .hero-content,
 .about-body,
 .story-content,
@@ -616,6 +625,7 @@ body.local-editing [data-edit] {
   max-width: 100%;
   box-sizing: border-box;
 }
+.figure-frame { box-sizing: border-box; }
 
 @media (max-width: 980px) {
   .hero-grid { flex-direction: column; }
