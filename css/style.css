@@ -534,9 +534,23 @@ body.local-editing .figure-frame.upload-hover {
 body.local-editing .figure-frame,
 body.local-editing .hero-content,
 body.local-editing .about-body,
-body.local-editing .story-content {
+body.local-editing .story-content,
+body.local-editing [data-edit] {
   resize: both;
   overflow: auto;
+}
+/* [data-edit] leaves are the individual text holders (a heading, a single
+   paragraph, ...) — resizable on their own now, not just as part of their
+   parent block, so e.g. the hero name can be sized independently from the
+   paragraph below it. Each one already gets a dashed outline + resize
+   handle from the .editor-leaf rule in edit-mode.js once editing is on. */
+body.local-editing [data-edit] {
+  display: block;
+  /* height:auto is computed slightly tighter than some fonts actually
+     render (tall serif headings especially), which paired with the
+     overflow:auto that `resize` requires shows a needless scrollbar. A
+     little breathing room absorbs that without changing published layout. */
+  padding-bottom: 0.2em;
 }
 
 /* A hand-dragged fixed width (see above) is set in raw pixels, so on its
@@ -547,7 +561,8 @@ body.local-editing .story-content {
 .figure-frame,
 .hero-content,
 .about-body,
-.story-content {
+.story-content,
+[data-edit] {
   max-width: 100%;
   box-sizing: border-box;
 }

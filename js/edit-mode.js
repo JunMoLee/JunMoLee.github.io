@@ -139,8 +139,10 @@
             else. Once a figure has an image, a zoom slider appears at the
             bottom of the box to shrink it within the frame (the frame's own
             size is unaffected — drag its bottom-right corner to resize
-            that). Resizing sets a fixed size that won't shrink for small
-            screens, so check mobile after resizing anything.
+            that). Every text block has its own resize handle too, so a
+            heading or paragraph can be sized independently from the rest.
+            Resizing sets a fixed size that won't shrink for small screens,
+            so check mobile after resizing anything.
           </div>
         </div>
 
