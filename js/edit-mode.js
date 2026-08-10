@@ -441,7 +441,13 @@
   // own max-width:100% up the chain (relative to ITS parent), so bumping
   // it here can never push the growth past whatever actually has a
   // sibling to protect — it just stops the cap from biting before that.
-  const TEXT_CAPPING_PARENTS = ".hero-content, .about-body, .story-content";
+  // .hero-intro and .hero-status aren't resizable boxes in their own right
+  // (no grip, not in RESIZE_SELECTOR) — .hero-intro wraps the tagline/lead
+  // pair and .hero-status wraps the status dot + text — but both are
+  // exactly the kind of "parent that happens to be narrower than what got
+  // dragged" case this same fix is for, so they're included here too even
+  // though nothing points a grip at them directly.
+  const TEXT_CAPPING_PARENTS = ".hero-content, .hero-intro, .hero-status, .about-body, .story-content";
   function growCappingParent(target, newW) {
     const parent = target.parentElement;
     if (!parent || !parent.matches(TEXT_CAPPING_PARENTS)) return;
