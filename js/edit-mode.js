@@ -413,7 +413,7 @@
   // no such sibling to make room for, so it stays resizable directly
   // (filtered out below rather than folded into this selector with a
   // compound :not(), which is harder to read for a one-off exclusion).
-  const RESIZE_SELECTOR = ".figure-frame, .hero-content, .hero-figure, .about-body, .story-content, [data-edit]";
+  const RESIZE_SELECTOR = ".figure-frame, .hero-content, .hero-figure, .about-body, .story-content, [data-edit], figcaption";
 
   // corner: "br" grows down/right in place; "tl" grows up/left by growing
   // width/height while pulling the box's own position back with a negative

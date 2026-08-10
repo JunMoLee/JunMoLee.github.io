@@ -570,9 +570,11 @@ body.local-editing .figure-frame.upload-hover {
    plain draggable div sidesteps both problems. */
 body.local-editing .figure-frame,
 body.local-editing .hero-content,
+body.local-editing .hero-figure,
 body.local-editing .about-body,
 body.local-editing .story-content,
-body.local-editing [data-edit] {
+body.local-editing [data-edit],
+body.local-editing figcaption {
   overflow: auto;
   position: relative;
 }
