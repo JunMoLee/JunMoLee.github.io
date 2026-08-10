@@ -417,7 +417,6 @@ button { font: inherit; background: none; border: none; cursor: pointer; color: 
   margin-top: var(--sp-6);
   font-size: var(--fs-lead);
   color: var(--ink-soft);
-  max-width: 36rem;
 }
 .hero-links {
   margin-top: var(--sp-7);
