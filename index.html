@@ -214,7 +214,7 @@
       <div class="story-content" style="width: 774px; max-width: 100%; height: 512px;">
         <p class="story-kicker">04 — Circuit / System Design</p>
         <h3 class="story-title" data-edit="theme-c-title" style="width: 734px; height: 107px; max-width: 100%;">Next-Generation AI Hardware Design<p>(Digital Compute-in-Memory)<br></p></h3>
-        <p class="story-text" data-edit="theme-c-text" style="width: 735px; height: 155px; max-width: 100%;">Fabricated memory devices or process integration schemes become useful for AI hardware only once it is built into a functional circuit or system. I have focused on leveraging the fabricated oxide/ferroelectric devices or projected advanced logic transistors to enable new digital compute-in-memory (DCIM) architectures. Capacitive digital compute-in-memory (Cap-DCIM) is an AI
+        <p class="story-text" data-edit="theme-c-text" style="width: 731px; height: 194px; max-width: 100%;">Fabricated memory devices or process integration schemes become useful for AI hardware only once they are built into a functional circuit or system. I have focused on leveraging the fabricated oxide/ferroelectric devices or projected advanced logic transistors to enable new digital compute-in-memory (DCIM) architectures. Capacitive digital compute-in-memory (Cap-DCIM) is an AI
           accelerator architecture enabled by the monolithically integrated non-volatile capacitive memories on TSMC's 40&nbsp;nm chip. I also designed a CFET-based 8T DCIM architecture using CFET enabling for A5(0.5&nbsp;nm)-node 3D digital
           compute-in-memory: connecting the devices from the earlier stages to circuit-level AI
           hardware design.</p>
@@ -234,21 +234,16 @@
             <code>assets/images/fig-circuit-design.jpg</code>
           </div>
         </div>
-        <figcaption style="width: 594px; height: 45px; max-width: 100%; margin-left: 3px; margin-top: 2px;">Cap-DCIM / CFET 8T DCIM — new DCIM architectures based on emerging memories and advanced logic transistors</figcaption>
+        <figcaption style="width: 594px; height: 45px; max-width: 100%; margin-left: -8px; margin-top: -2px;">Cap-DCIM / CFET 8T DCIM — new DCIM architectures based on emerging memories and advanced logic transistors</figcaption>
       </figure>
     </article>
 
     <!-- Theme D -->
     <article class="research-story reveal" id="story-benchmarking">
-      <div class="story-content" style="width: 742px; max-width: 100%;">
+      <div class="story-content" style="width: 751px; max-width: 100%;">
         <p class="story-kicker">05 — System Benchmark (DTCO / STCO)</p>
         <h3 class="story-title" data-edit="theme-d-title" style="width: 741px; height: 103px; max-width: 100%;">Device-to-System Benchmarking&nbsp;<p>(DTCO / STCO)</p></h3>
-        <p class="story-text" data-edit="theme-d-text" style="width: 751px; height: 185px; max-width: 100%;">In order to evaluate the circuit and system, and more fundamentally, the underlying process and device technologies, device-to-system benchmark framework is essential. I have made I lead development of
-          <strong><a href="https://github.com/neurosim/DNN_NeuroSim_V1.4" target="_blank" rel="noopener">NeuroSim&nbsp;V1.4</a></strong>, a C++/Python benchmarking framework that models
-          compute-in-memory hardware at technology nodes down to 1&nbsp;nm, including CFET-based 3D
-          architectures. <a href="https://ieeexplore.ieee.org/document/11008711?denied=" target="_blank" rel="noopener">Extended work</a> supporting A5 technology node is also published. I have used it to perform DTCO of digital compute-in-memory at leading-edge
-          nodes — connecting device-level assumptions to system-level outcomes that other researchers
-          can reuse.</p>
+        <p class="story-text" data-edit="theme-d-text" style="width: 751px; height: 194px; max-width: 100%;">To evaluate circuit- and system-level performance, and ultimately optimize the underlying process and device technologies, a robust device-to-system benchmarking framework is essential. I lead the development of <a data-start="268" data-end="334" rel="noopener" target="_new" class="decorated-link" href="https://github.com/neurosim/DNN_NeuroSim_V1.4"><strong data-start="269" data-end="286">NeuroSim V1.4</strong></a>, a C++/Python framework for benchmarking compute-in-memory hardware across technology nodes down to 1 nm. <a data-start="441" data-end="511" rel="noopener" target="_new" class="decorated-link" href="https://ieeexplore.ieee.org/document/11008711?denied=">Extended work</a> supporting the A5 technology node with CFET devices has also been published. I have used this framework to perform DTCO/STCO of novel digital compute-in-memory architectures, including <strong data-start="692" data-end="725">CFET- and nvCAP-based designs</strong>, at leading-edge nodes, connecting device-level assumptions to circuit- and system-level outcomes.&nbsp;<a data-start="268" data-end="334" rel="noopener" target="_new" class="decorated-link" href="https://github.com/neurosim/DNN_NeuroSim_V1.4" style="text-decoration: underline rgb(239, 219, 195); transition: text-decoration-color 0.16s cubic-bezier(0.2, 0.6, 0.2, 1), color 0.16s cubic-bezier(0.2, 0.6, 0.2, 1);"><strong data-start="269" data-end="286">NeuroSim V1.4</strong></a>&nbsp;is widely used in the compute-in-memory research community.<br></p>
         <dl class="spec-strip">
           <div class="spec-row"><dt>Framework</dt><dd>NeuroSim V1.4 — lead developer</dd></div>
           <div class="spec-row"><dt>Nodes</dt><dd>Down to 0.5&nbsp;nm / A5 CFET technology</dd></div>
@@ -259,14 +254,14 @@
         </div>
       </div>
       <figure class="story-figure">
-        <div class="figure-frame">
+        <div class="figure-frame" style="width: 627px; height: 577px; max-width: 100%; margin-left: -16px; margin-top: -8px;">
           <img src="assets/images/fig-dtco-system.jpg" alt="Flow diagram from device parameters through NeuroSim to chip-level power, performance, and area metrics">
           <div class="figure-placeholder">
             <span>Figure pending</span>
             <code>assets/images/fig-dtco-system.jpg</code>
           </div>
         </div>
-        <figcaption style="width: 586px; height: 24px; max-width: 100%; margin-left: 3px; margin-top: 2px;">DTCO/STCO flow — device metrics into chip-level power / performance / area.</figcaption>
+        <figcaption style="width: 755px; height: 24px; max-width: 100%; margin-left: -1px; margin-top: 0px;">DTCO/STCO flow: translating process and device metrics into chip-level power, performance, and area</figcaption>
       </figure>
     </article>
   </div>
