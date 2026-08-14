@@ -55,7 +55,7 @@
 
   /* ---------- Site-wide links ---------- */
   function renderSiteLinks(site) {
-    document.title = `${site.name} — Semiconductor Device Research`;
+    document.title = `${site.name} — Semiconductor Device Researcher`;
 
     const heroLinks = document.getElementById("heroLinks");
     const contactLinks = document.getElementById("contactLinks");
