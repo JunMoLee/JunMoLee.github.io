@@ -834,10 +834,12 @@ body.local-editing [data-edit] {
   margin-top: var(--sp-3);
 }
 .story-tab {
+  display: inline-block;
   font-family: var(--font-mono);
   font-size: var(--fs-xs);
   letter-spacing: 0.02em;
   text-transform: uppercase;
+  text-decoration: none;
   color: var(--ink-soft);
   background: transparent;
   border: 1px solid var(--line-strong);
@@ -860,12 +862,17 @@ body.local-editing [data-edit] {
 }
 .story-tab.is-active span { color: var(--paper); opacity: 0.8; }
 .story-panel {
-  display: none;
+  display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: var(--sp-8);
   align-items: center;
+  scroll-margin-top: 8rem;
 }
-.story-panel.is-active { display: grid; }
+.story-panel + .story-panel {
+  margin-top: var(--sp-9);
+  padding-top: var(--sp-9);
+  border-top: 1px solid var(--line);
+}
 
 @media (max-width: 900px) {
   .stage-rail { grid-template-columns: repeat(2, 1fr); }

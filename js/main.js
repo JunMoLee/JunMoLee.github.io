@@ -300,21 +300,24 @@
   }
 
   /* ---------- Research story sub-tabs ---------- */
+  // Both panels are always visible; the tabs are jump links that scroll to
+  // their panel, and stay highlighted for whichever panel is in view.
   function setupResearchTabs() {
     document.querySelectorAll(".research-story-tabbed").forEach((article) => {
-      const tabs = article.querySelectorAll(".story-tab");
-      const panels = article.querySelectorAll(".story-panel");
-      tabs.forEach((tab) => {
-        tab.addEventListener("click", () => {
-          const target = tab.dataset.tab;
-          tabs.forEach((t) => {
-            const active = t === tab;
-            t.classList.toggle("is-active", active);
-            t.setAttribute("aria-selected", active ? "true" : "false");
+      const tabs = Array.from(article.querySelectorAll(".story-tab"));
+      const panels = Array.from(article.querySelectorAll(".story-panel"));
+      if (!tabs.length || !panels.length || !("IntersectionObserver" in window)) return;
+      const spy = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              tabs.forEach((t) => t.classList.toggle("is-active", t.dataset.tab === entry.target.dataset.tabPanel));
+            }
           });
-          panels.forEach((panel) => panel.classList.toggle("is-active", panel.dataset.tabPanel === target));
-        });
-      });
+        },
+        { rootMargin: "-45% 0px -50% 0px" }
+      );
+      panels.forEach((p) => spy.observe(p));
     });
   }
 

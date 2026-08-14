@@ -182,13 +182,13 @@
     <article class="research-story research-story-tabbed reveal" id="story-process-device">
       <div class="story-tabs-head">
         <p class="story-kicker">01 — Process → Device</p>
-        <div class="story-tabs" role="tablist">
-          <button class="story-tab is-active" type="button" role="tab" aria-selected="true" data-tab="nvcap">Oxide-Channel nvCAP <span>Memory</span></button>
-          <button class="story-tab" type="button" role="tab" aria-selected="false" data-tab="power">Superlattice Capacitors <span>On-chip Power Delivery</span></button>
+        <div class="story-tabs">
+          <a class="story-tab is-active" href="#panel-nvcap" data-tab="nvcap">Oxide-Channel nvCAP <span>Memory</span></a>
+          <a class="story-tab" href="#panel-power" data-tab="power">Superlattice Capacitors <span>On-chip Power Delivery</span></a>
         </div>
       </div>
 
-      <div class="story-panel is-active" data-tab-panel="nvcap">
+      <div class="story-panel" id="panel-nvcap" data-tab-panel="nvcap">
         <div class="story-content">
           <h3 class="story-title" data-edit="theme-a-title" style="width: 683px; height: 64px; max-width: 100%;">Oxide-Semiconductor &amp; Ferroelectric Memory</h3>
           <p class="story-text" data-edit="theme-a-text" style="width: 679px; height: 258px; max-width: 100%;"><strong>Non-volatile capacitive memory (nvCAP)</strong> is a new memory-device concept that uses <em>capacitance states</em>, rather than conventional resistance or charge states, to encode information. I pioneered an <a href="https://ieeexplore.ieee.org/abstract/document/10873481" target="_blank" rel="noopener">oxide-channel nvCAP incorporating an oxide-semiconductor channel</a>, enabling two key features for future AI hardware: <strong>(i) BEOL integration compatibility and (ii) a high capacitance on/off ratio (&gt;20).</strong> I developed the ALD processes for the two material systems that enable these characteristics: <strong>(i) W-doped In₂O₃ oxide-semiconductor channels and (ii) HZO&nbsp;ferroelectric thin films.</strong> Later, I further improved the oxide-channel nvCAP characteristics by <a href="https://ieeexplore.ieee.org/abstract/document/11353811" target="_blank" rel="noopener">dual-gate engineering</a>, followed by comprehensive device characterization, circuit-level evaluation, and an <a href="https://ieeexplore.ieee.org/abstract/document/11353789" target="_blank" rel="noopener">array-level demonstration of charge-domain in-memory search</a>.</p>
@@ -213,7 +213,7 @@
         </figure>
       </div>
 
-      <div class="story-panel" data-tab-panel="power">
+      <div class="story-panel" id="panel-power" data-tab-panel="power">
         <div class="story-content">
           <h3 class="story-title" data-edit="theme-a2-title" style="width: 665px; height: 110px; max-width: 100%;">On-Chip Vertical Power Delivery:&nbsp;<p>BEOL Oxide TFTs and Superlattice Capacitors</p></h3>
           <p class="story-text" data-edit="theme-a2-text" style="width: 663px; height: 256px; max-width: 100%;">Beyond memory devices, I have also contributed to developing <strong>BEOL-compatible power delivery systems</strong> for the efficient operation of emerging 3D-integrated chip architectures in the AI era. I worked on fabricating on-chip switched-capacitor DC-DC converters built from ALD oxide thin-film power transistors and superlattice MIM capacitors. I developed and optimized the <a class="decorated-link" rel="noopener" target="_blank" href="https://ieeexplore.ieee.org/document/10605255/"><strong>backside-compatible high-voltage superlattice capacitor</strong></a>&nbsp;at the core of this converter, along with comprehensive reliability analysis and time-dependent dielectric breakdown (TDDB) characterization. This device-level work was subsequently integrated into a <a href="https://ieeexplore.ieee.org/abstract/document/10631422?casa_token=AKWr94Yv9OgAAAAA:64xXOryfxFKXKyhnDAjV5BHAOJc-olbN5RwnzwmR_DzWSvbWo6aHtK_jm72zK3uWiO498uIf" target="_blank" rel="noopener"><b>full on-chip DC-DC converter demonstration</b></a> developed in collaboration with Dr. S. Deng and Dr. J. Kwak.</p>
