@@ -172,71 +172,77 @@
     </div>
 
     <ul class="stage-rail reveal">
-      <li><a href="#story-process-device"><span class="num">01</span>Process Development</a></li>
-      <li><a href="#story-process-device"><span class="num">02</span>Device Fabrication</a></li>
-      <li><a href="#story-m3d-integration"><span class="num">03</span>M3D Integration</a></li>
-      <li><a href="#story-circuit-design"><span class="num">04</span>Circuit / System Design</a></li>
-      <li><a href="#story-benchmarking"><span class="num">05</span>System Benchmark</a></li>
+      <li><a href="#story-process-device"><span class="num">01</span>Process Development → Device Fabrication</a></li>
+      <li><a href="#story-m3d-integration"><span class="num">02</span>M3D Integration</a></li>
+      <li><a href="#story-circuit-design"><span class="num">03</span>Circuit / System Design</a></li>
+      <li><a href="#story-benchmarking"><span class="num">04</span>System Benchmark</a></li>
     </ul>
 
-    <!-- Theme A -->
-    <article class="research-story reveal" id="story-process-device">
-      <div class="story-content" style="width: 763px; max-width: 100%; height: 668px;">
-        <p class="story-kicker">01–02 — Process → Device (1/2)</p>
-        <h3 class="story-title" data-edit="theme-a-title" style="width: 740px; height: 56px; max-width: 100%;">Oxide-Semiconductor &amp; Ferroelectric Memory</h3>
-        <p class="story-text" data-edit="theme-a-text" style="width: 740px; height: 222px; max-width: 100%;"><strong data-start="111" data-end="153">Non-volatile capacitive memory (nvCAP)</strong> is a new memory-device concept that uses <em data-start="195" data-end="215">capacitance states</em>, rather than conventional resistance or charge states, to encode information. I pioneered an&nbsp;<a href="https://ieeexplore.ieee.org/abstract/document/10873481" target="_blank" rel="noopener">oxide-channel nvCAP incorporating an oxide-semiconductor channel</a>, enabling two key features for future AI hardware: <strong data-start="411" data-end="497">(i) BEOL integration compatibility and (ii) a high capacitance on/off ratio (&gt;20).</strong> I developed the ALD processes for the two material systems that enable these characteristics: <strong data-start="592" data-end="690" data-is-only-node="">(i) W-doped In₂O₃ oxide-semiconductor channels and (ii) HZO&nbsp;ferroelectric thin films.</strong> Later, I further improved the oxide-channel nvCAP characteristics by <a href="https://ieeexplore.ieee.org/abstract/document/11353811" target="_blank" rel="noopener">dual-gate engineering</a>, followed by comprehensive device characterization, circuit-level evaluation, and an <a href="https://ieeexplore.ieee.org/abstract/document/11353789" target="_blank" rel="noopener">array-level demonstration of charge-domain in-memory search</a>.<br></p>
-        <dl class="spec-strip">
-          <div class="spec-row"><dt>Process</dt><dd>ALD of W-doped In<sub>2</sub>O<sub>3</sub>, dry etch (CCP/ICP-RIE), RTP, ellipsometry, photolithography etc.</dd></div>
-          <div class="spec-row"><dt>Devices</dt><dd>Ferroelectric non-volatile capacitors</dd></div>
-          <div class="spec-row"><dt>Recognition</dt><dd>IEDM 2025 conference highlight paper · featured in Nature Electronics &amp; Semiconductor Engineering</dd></div>
-        </dl>
-        <div class="tag-row">
-          <span class="tag">IEDM '24</span><span class="tag">IEDM '25 ×2</span><span class="tag">Under review — TNANO</span>
+    <!-- Theme A: Process -> Device (tabbed: nvCAP memory / power delivery) -->
+    <article class="research-story research-story-tabbed reveal" id="story-process-device">
+      <div class="story-tabs-head">
+        <p class="story-kicker">01 — Process → Device</p>
+        <div class="story-tabs" role="tablist">
+          <button class="story-tab is-active" type="button" role="tab" aria-selected="true" data-tab="nvcap">Oxide-Channel nvCAP <span>Memory</span></button>
+          <button class="story-tab" type="button" role="tab" aria-selected="false" data-tab="power">Superlattice Capacitors <span>Power Delivery</span></button>
         </div>
       </div>
-      <figure class="story-figure">
-        <div class="figure-frame" style="margin-left: -50px; margin-top: 7px;">
-          <img src="assets/images/fig-process-device.jpg?t=1786346747969" alt="Cross-section of the ferroelectric / oxide-semiconductor capacitive memory stack" class="">
-          <div class="figure-placeholder">
-            <span>Figure pending</span>
-            <code>assets/images/fig-process-device.jpg</code>
-          </div>
-        </div>
-        <figcaption style="margin-left: 4px; margin-top: 0px;">Development of oxide-channel nvCAP (JEDM 24')</figcaption>
-      </figure>
-    </article>
 
-    <!-- Theme A2 -->
-    <article class="research-story reveal" id="story-power-delivery">
-      <div class="story-content" style="width: 847px; max-width: 100%;">
-        <p class="story-kicker">01–02 — Process → Device (2/2)</p>
-        <h3 class="story-title" data-edit="theme-a2-title" style="width: 813px; height: 100px; max-width: 100%;">On-Chip Vertical Power Delivery:&nbsp;<p>BEOL Oxide TFTs and Superlattice Capacitors</p></h3>
-        <p class="story-text" data-edit="theme-a2-text" style="width: 731px; height: 175px; max-width: 100%;">Beyond memory devices, I have also contributed to developing <strong data-start="119" data-end="161">BEOL-compatible power delivery systems</strong> for the efficient operation of emerging 3D-integrated chip architectures in the AI era. I worked on fabricating on-chip switched-capacitor DC-DC converters built from ALD oxide thin-film power transistors and superlattice MIM capacitors. I developed and optimized the <a data-start="430" data-end="539" class="decorated-link" rel="noopener" target="_new" href="https://ieeexplore.ieee.org/document/10605255/"><strong data-start="431" data-end="490">backside-compatible high-voltage superlattice capacitor</strong></a>&nbsp;at the core of this converter, along with comprehensive reliability analysis and time-dependent dielectric breakdown (TDDB) characterization. This device-level work was subsequently integrated into a full on-chip DC-DC converter demonstration developed in collaboration with S. Deng and J. Kwak.<br></p>
-        <dl class="spec-strip">
-          <div class="spec-row"><dt>Process</dt><dd>ALD of Hf/Zr/Al laminates, RTP, ellipsometry, photolithography etc.</dd></div>
-          <div class="spec-row"><dt>Devices</dt><dd>Oxide thin-film power transistors, high-voltage superlattice capacitors</dd></div>
-          <div class="spec-row"><dt>Recognition</dt><dd>Best Oral Presentation nomination at DRC 2024 (top 15 finalist), Top-ranked student paper at VLSI 2024</dd></div>
-        </dl>
-        <div class="tag-row">
-          <span class="tag">IEDM '23</span><span class="tag">VLSI '24</span><span class="tag">TED '24</span><span class="tag">DRC '24</span>
-        </div>
-      </div>
-      <figure class="story-figure">
-        <div class="figure-frame" style="width: 679px; height: 545px; max-width: 100%; margin-left: -10px; margin-top: 6px;">
-          <img src="assets/images/fig-power-delivery.jpg?t=1786676151287" alt="Cross-section and circuit diagram of the BEOL-compatible on-chip switched-capacitor DC-DC converter" class="">
-          <div class="figure-placeholder">
-            <span>Figure pending</span>
-            <code>assets/images/fig-power-delivery.jpg</code>
+      <div class="story-panel is-active" data-tab-panel="nvcap">
+        <div class="story-content">
+          <h3 class="story-title" data-edit="theme-a-title">Oxide-Semiconductor &amp; Ferroelectric Memory</h3>
+          <p class="story-text" data-edit="theme-a-text"><strong>Non-volatile capacitive memory (nvCAP)</strong> is a new memory-device concept that uses <em>capacitance states</em>, rather than conventional resistance or charge states, to encode information. I pioneered an <a href="https://ieeexplore.ieee.org/abstract/document/10873481" target="_blank" rel="noopener">oxide-channel nvCAP incorporating an oxide-semiconductor channel</a>, enabling two key features for future AI hardware: <strong>(i) BEOL integration compatibility and (ii) a high capacitance on/off ratio (&gt;20).</strong> I developed the ALD processes for the two material systems that enable these characteristics: <strong>(i) W-doped In₂O₃ oxide-semiconductor channels and (ii) HZO&nbsp;ferroelectric thin films.</strong> Later, I further improved the oxide-channel nvCAP characteristics by <a href="https://ieeexplore.ieee.org/abstract/document/11353811" target="_blank" rel="noopener">dual-gate engineering</a>, followed by comprehensive device characterization, circuit-level evaluation, and an <a href="https://ieeexplore.ieee.org/abstract/document/11353789" target="_blank" rel="noopener">array-level demonstration of charge-domain in-memory search</a>.</p>
+          <dl class="spec-strip">
+            <div class="spec-row"><dt>Process</dt><dd>ALD of W-doped In<sub>2</sub>O<sub>3</sub>, dry etch (CCP/ICP-RIE), RTP, ellipsometry, photolithography etc.</dd></div>
+            <div class="spec-row"><dt>Devices</dt><dd>Ferroelectric non-volatile capacitors</dd></div>
+            <div class="spec-row"><dt>Recognition</dt><dd>IEDM 2025 conference highlight paper · featured in Nature Electronics &amp; Semiconductor Engineering</dd></div>
+          </dl>
+          <div class="tag-row">
+            <span class="tag">IEDM '24</span><span class="tag">IEDM '25 ×2</span><span class="tag">Under review — TNANO</span>
           </div>
         </div>
-        <figcaption style="width: 690px; height: 39px; max-width: 100%; margin-left: 4px; margin-top: 0px;">On-chip DC-DC converter using oxide power transistors and superlattice capacitors&nbsp;<p>(VLSI '24, TED '24, DRC '24)</p></figcaption>
-      </figure>
+        <figure class="story-figure">
+          <div class="figure-frame" style="margin-left: -50px; margin-top: 7px;">
+            <img src="assets/images/fig-process-device.jpg?t=1786346747969" alt="Cross-section of the ferroelectric / oxide-semiconductor capacitive memory stack">
+            <div class="figure-placeholder">
+              <span>Figure pending</span>
+              <code>assets/images/fig-process-device.jpg</code>
+            </div>
+          </div>
+          <figcaption style="margin-left: 4px; margin-top: 0px;">Development of oxide-channel nvCAP (JEDM 24')</figcaption>
+        </figure>
+      </div>
+
+      <div class="story-panel" data-tab-panel="power">
+        <div class="story-content">
+          <h3 class="story-title" data-edit="theme-a2-title">On-Chip Vertical Power Delivery:&nbsp;<p>BEOL Oxide TFTs and Superlattice Capacitors</p></h3>
+          <p class="story-text" data-edit="theme-a2-text">Beyond memory devices, I have also contributed to developing <strong>BEOL-compatible power delivery systems</strong> for the efficient operation of emerging 3D-integrated chip architectures in the AI era. I worked on fabricating on-chip switched-capacitor DC-DC converters built from ALD oxide thin-film power transistors and superlattice MIM capacitors. I developed and optimized the <a class="decorated-link" rel="noopener" target="_blank" href="https://ieeexplore.ieee.org/document/10605255/"><strong>backside-compatible high-voltage superlattice capacitor</strong></a>&nbsp;at the core of this converter, along with comprehensive reliability analysis and time-dependent dielectric breakdown (TDDB) characterization. This device-level work was subsequently integrated into a full on-chip DC-DC converter demonstration developed in collaboration with S. Deng and J. Kwak.</p>
+          <dl class="spec-strip">
+            <div class="spec-row"><dt>Process</dt><dd>ALD of Hf/Zr/Al laminates, RTP, ellipsometry, photolithography etc.</dd></div>
+            <div class="spec-row"><dt>Devices</dt><dd>Oxide thin-film power transistors, high-voltage superlattice capacitors</dd></div>
+            <div class="spec-row"><dt>Recognition</dt><dd>Best Oral Presentation nomination at DRC 2024 (top 15 finalist), Top-ranked student paper at VLSI 2024</dd></div>
+          </dl>
+          <div class="tag-row">
+            <span class="tag">IEDM '23</span><span class="tag">VLSI '24</span><span class="tag">TED '24</span><span class="tag">DRC '24</span>
+          </div>
+        </div>
+        <figure class="story-figure">
+          <div class="figure-frame" style="width: 679px; height: 545px; max-width: 100%; margin-left: -10px; margin-top: 6px;">
+            <img src="assets/images/fig-power-delivery.jpg?t=1786676151287" alt="Cross-section and circuit diagram of the BEOL-compatible on-chip switched-capacitor DC-DC converter">
+            <div class="figure-placeholder">
+              <span>Figure pending</span>
+              <code>assets/images/fig-power-delivery.jpg</code>
+            </div>
+          </div>
+          <figcaption style="width: 690px; height: 39px; max-width: 100%; margin-left: 4px; margin-top: 0px;">On-chip DC-DC converter using oxide power transistors and superlattice capacitors&nbsp;<p>(VLSI '24, TED '24, DRC '24)</p></figcaption>
+        </figure>
+      </div>
     </article>
 
     <!-- Theme B -->
     <article class="research-story reveal" id="story-m3d-integration">
       <div class="story-content" style="width: 796px; max-width: 100%;">
-        <p class="story-kicker">03 — Process Integration</p>
+        <p class="story-kicker">02 — Process Integration</p>
         <h3 class="story-title" data-edit="theme-b-title" style="width: 740px; height: 62px; max-width: 100%;">Monolithic 3D Integration on Foundry CMOS</h3>
         <p class="story-text" data-edit="theme-b-text" style="width: 741px; height: 169px; max-width: 100%;"><span data-start="82" data-end="181">A device is truly BEOL-compatible only if it can be integrated directly on top of FEOL Si CMOS.</span> I designed and experimentally demonstrated a monolithic 3D (M3D) integration flow, namely <b>CMOS+X</b> flow, for stacking <b>dual-gated oxide-channel non-volatile capacitive memory (DG nvCAP)</b> directly on <b>TSMC 40 nm Si CMOS</b>, marking the first experimental demonstration of a ferroelectric nvCAP integrated on a foundry CMOS platform. This work was nominated for the <span data-start="610" data-end="666" style="">Roger A. Haken Best Student Paper Award at IEDM 2025</span> and was invited for journal publication in <em data-start="710" data-end="749" data-is-only-node="">IEEE Transactions on Electron Devices</em>.<br></p>
         <dl class="spec-strip">
@@ -263,7 +269,7 @@
     <!-- Theme C -->
     <article class="research-story reveal" id="story-circuit-design">
       <div class="story-content" style="width: 774px; max-width: 100%; height: 512px;">
-        <p class="story-kicker">04 — Circuit / System Design</p>
+        <p class="story-kicker">03 — Circuit / System Design</p>
         <h3 class="story-title" data-edit="theme-c-title" style="width: 734px; height: 107px; max-width: 100%;">Next-Generation AI Hardware Design<p>(Digital Compute-in-Memory)<br></p></h3>
         <p class="story-text" data-edit="theme-c-text" style="width: 731px; height: 194px; max-width: 100%;">Fabricated memory devices or process integration schemes become useful for AI hardware only once they are built into a functional circuit or system. I have focused on leveraging the fabricated oxide/ferroelectric devices or projected advanced logic transistors to enable <b>new digital compute-in-memory (DCIM) architectures</b>. <b>Capacitive digital compute-in-memory (Cap-DCIM)</b> is an AI
           accelerator architecture enabled by the monolithically integrated non-volatile capacitive memories on TSMC's 40&nbsp;nm chip. I also designed a <b>CFET-based 8T DCIM architecture</b> using CFET enabling for A5(0.5&nbsp;nm)-node 3D digital
@@ -292,7 +298,7 @@
     <!-- Theme D -->
     <article class="research-story reveal" id="story-benchmarking">
       <div class="story-content" style="width: 751px; max-width: 100%;">
-        <p class="story-kicker">05 — System Benchmark (DTCO / STCO)</p>
+        <p class="story-kicker">04 — System Benchmark (DTCO / STCO)</p>
         <h3 class="story-title" data-edit="theme-d-title" style="width: 747px; height: 107px; max-width: 100%;">Device-to-System Benchmarking&nbsp;<p>(DTCO / STCO)</p></h3>
         <p class="story-text" data-edit="theme-d-text" style="width: 751px; height: 194px; max-width: 100%;">To evaluate circuit- and system-level performance, and ultimately optimize the underlying process and device technologies, a robust device-to-system benchmarking framework is essential. I led the development of <a data-start="268" data-end="334" rel="noopener" target="_new" class="decorated-link" href="https://github.com/neurosim/DNN_NeuroSim_V1.4"><strong data-start="269" data-end="286">NeuroSim V1.4</strong></a>, a C++/Python framework for benchmarking compute-in-memory hardware across technology nodes down to 1 nm. <a data-start="441" data-end="511" rel="noopener" target="_new" class="decorated-link" href="https://ieeexplore.ieee.org/document/11008711?denied=">Extended work</a> supporting the A5 technology node with CFET devices was also published. I have used this framework to perform DTCO/STCO of novel digital compute-in-memory architectures, including <strong data-start="692" data-end="725">CFET- and nvCAP-based designs</strong>, at leading-edge nodes, connecting device-level assumptions to circuit- and system-level outcomes.&nbsp;<a data-start="268" data-end="334" rel="noopener" target="_new" class="decorated-link" href="https://github.com/neurosim/DNN_NeuroSim_V1.4" style="text-decoration: underline rgb(239, 219, 195); transition: text-decoration-color 0.16s cubic-bezier(0.2, 0.6, 0.2, 1), color 0.16s cubic-bezier(0.2, 0.6, 0.2, 1);"><strong data-start="269" data-end="286">NeuroSim V1.4</strong></a>&nbsp;is widely used in the compute-in-memory research community.<br></p>
         <dl class="spec-strip">

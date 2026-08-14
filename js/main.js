@@ -299,6 +299,25 @@
     }
   }
 
+  /* ---------- Research story sub-tabs ---------- */
+  function setupResearchTabs() {
+    document.querySelectorAll(".research-story-tabbed").forEach((article) => {
+      const tabs = article.querySelectorAll(".story-tab");
+      const panels = article.querySelectorAll(".story-panel");
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          const target = tab.dataset.tab;
+          tabs.forEach((t) => {
+            const active = t === tab;
+            t.classList.toggle("is-active", active);
+            t.setAttribute("aria-selected", active ? "true" : "false");
+          });
+          panels.forEach((panel) => panel.classList.toggle("is-active", panel.dataset.tabPanel === target));
+        });
+      });
+    });
+  }
+
   /* ---------- Scroll reveal ---------- */
   function setupReveal() {
     const items = document.querySelectorAll(".reveal");
@@ -324,6 +343,7 @@
   async function init() {
     setupNav();
     setupFigures();
+    setupResearchTabs();
 
     try {
       const [site, pubs, pending, experience, education, presentations, teaching, skills, awards] = await Promise.all([

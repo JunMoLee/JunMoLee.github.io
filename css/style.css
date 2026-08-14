@@ -715,7 +715,7 @@ body.local-editing [data-edit] {
 /* ---------- 8. Research ---------- */
 .stage-rail {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 0;
   margin-bottom: var(--sp-9);
   border-top: 1px solid var(--line);
@@ -825,11 +825,55 @@ body.local-editing [data-edit] {
   max-width: 26rem;
 }
 
+.research-story-tabbed { display: block; }
+.story-tabs-head { margin-bottom: var(--sp-6); }
+.story-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  margin-top: var(--sp-3);
+}
+.story-tab {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  padding: var(--sp-3) var(--sp-4);
+  cursor: pointer;
+  transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.story-tab span {
+  display: block;
+  margin-top: 2px;
+  color: var(--ink-faint);
+  font-size: 0.9em;
+  text-transform: none;
+}
+.story-tab:hover { border-color: var(--accent); color: var(--ink); }
+.story-tab.is-active {
+  color: var(--paper);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.story-tab.is-active span { color: var(--paper); opacity: 0.8; }
+.story-panel {
+  display: none;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--sp-8);
+  align-items: center;
+}
+.story-panel.is-active { display: grid; }
+
 @media (max-width: 900px) {
-  .stage-rail { grid-template-columns: repeat(3, 1fr); }
-  .stage-rail li:nth-child(4) { border-left: none; }
+  .stage-rail { grid-template-columns: repeat(2, 1fr); }
+  .stage-rail li:nth-child(3) { border-left: none; }
   .research-story { grid-template-columns: 1fr; }
   .research-story:nth-of-type(even) .story-figure { order: -1; }
+  .story-panel { grid-template-columns: 1fr; }
+  .story-panel .story-figure { order: -1; }
   .story-title, .story-text { max-width: none; }
 }
 
