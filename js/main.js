@@ -34,6 +34,25 @@
     return t.content.firstElementChild;
   }
 
+  /* ---------- Visit notification ---------- */
+  // Fire-and-forget push ping via ntfy.sh (free, no account) so a visit to
+  // the published site shows up as a phone/desktop notification. Sends no
+  // visitor data — just a generic "someone's here" message with the page
+  // path, same privacy stance as the GoatCounter pageview counter. Never
+  // fires on localhost, so local editing/testing doesn't spam it. The
+  // topic name is a shared secret sitting in this public JS file (visible
+  // to anyone who views source) — change "visitNotifyTopic" in
+  // data/site.json to a new random string any time to stop unwanted pings.
+  function notifyVisit(site) {
+    const isLocal = ["localhost", "127.0.0.1"].includes(window.location.hostname);
+    if (isLocal || !site.visitNotifyTopic) return;
+    fetch(`https://ntfy.sh/${encodeURIComponent(site.visitNotifyTopic)}`, {
+      method: "POST",
+      body: `New visit: ${window.location.pathname}${window.location.hash}`,
+      headers: { Title: "junmolee.github.io visit", Priority: "default", Tags: "eyes" }
+    }).catch(() => {});
+  }
+
   /* ---------- Site-wide links ---------- */
   function renderSiteLinks(site) {
     document.title = `${site.name} — Semiconductor Device Research`;
@@ -320,6 +339,7 @@
       ]);
 
       renderSiteLinks(site);
+      notifyVisit(site);
       renderPublications(pubs);
       renderPending(pending);
       renderTimeline("experienceList", experience, "experience");
