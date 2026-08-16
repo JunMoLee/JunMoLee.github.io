@@ -321,6 +321,39 @@
     });
   }
 
+  /* ---------- Mobile-safe sizing ---------- */
+  // The local editor's resize/move grips write fixed px width/height/margin
+  // as inline styles, sized for whatever desktop window they were dragged
+  // in. Inline styles always beat the responsive CSS rules that reflow the
+  // hero/figures/story panels to a single column on narrow screens, so a
+  // custom-arranged element would otherwise keep its desktop box size (and
+  // desktop offset) on a phone instead of reflowing. Below the layout's own
+  // mobile breakpoint, clear just those inline values so the CSS mobile
+  // rules take over; restore them above it, so the saved desktop arrangement
+  // in index.html is never touched or lost, only ignored while narrow.
+  // Skipped on localhost so the local editor always shows/saves the real
+  // inline values it's working with.
+  function setupResponsiveSizing() {
+    const isLocal = ["localhost", "127.0.0.1"].includes(window.location.hostname);
+    if (isLocal) return;
+    const SELECTOR = ".figure-frame, .hero-content, .hero-figure, .about-body, .story-content, [data-edit], figcaption";
+    const PROPS = ["width", "height", "marginLeft", "marginTop"];
+    const saved = Array.from(document.querySelectorAll(SELECTOR))
+      .filter((el) => PROPS.some((p) => el.style[p]))
+      .map((el) => ({ el, values: PROPS.map((p) => el.style[p]) }));
+    if (!saved.length) return;
+    const mq = window.matchMedia("(max-width: 980px)");
+    const apply = () => {
+      saved.forEach(({ el, values }) => {
+        PROPS.forEach((p, i) => {
+          el.style[p] = mq.matches ? "" : values[i];
+        });
+      });
+    };
+    apply();
+    mq.addEventListener("change", apply);
+  }
+
   /* ---------- Scroll reveal ---------- */
   function setupReveal() {
     const items = document.querySelectorAll(".reveal");
@@ -347,6 +380,7 @@
     setupNav();
     setupFigures();
     setupResearchTabs();
+    setupResponsiveSizing();
 
     try {
       const [site, pubs, pending, experience, education, presentations, teaching, skills, awards] = await Promise.all([
