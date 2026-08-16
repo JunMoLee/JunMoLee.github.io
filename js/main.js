@@ -337,7 +337,14 @@
     const isLocal = ["localhost", "127.0.0.1"].includes(window.location.hostname);
     if (isLocal) return;
     const SELECTOR = ".figure-frame, .hero-content, .hero-figure, .about-body, .story-content, [data-edit], figcaption";
-    const PROPS = ["width", "height", "marginLeft", "marginTop"];
+    // maxWidth is included because growCappingParent() (edit-mode.js) pins an
+    // inline max-width:100% alongside a resized width so it isn't re-capped
+    // by the element's own rem-based prose max-width. That pin outlives the
+    // width it was written for once width is cleared here, and — being
+    // inline — would otherwise block the mobile CSS's own width/max-width
+    // (e.g. the hero figures' full-bleed rule) just as effectively as the
+    // width itself would.
+    const PROPS = ["width", "height", "marginLeft", "marginTop", "maxWidth"];
     const saved = Array.from(document.querySelectorAll(SELECTOR))
       .filter((el) => PROPS.some((p) => el.style[p]))
       .map((el) => ({ el, values: PROPS.map((p) => el.style[p]) }));
