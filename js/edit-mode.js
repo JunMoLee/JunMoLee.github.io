@@ -471,6 +471,23 @@
     el.style.maxWidth = "100%";
   }
 
+  // A figure-frame (or .hero-figure, whose child figure-frame fills it) with
+  // a real image loaded has one "correct" shape: its own. Dragging width and
+  // height independently, as this grip otherwise does, easily drifts away
+  // from that — object-fit:contain then just letterboxes the mismatch as
+  // dead space rather than cropping, so the box quietly ends up mostly
+  // empty padding around a smaller image. Locking the drag to the image's
+  // natural aspect ratio for these targets makes that impossible instead of
+  // relying on whoever's dragging to eyeball the right shape. Placeholder
+  // frames with no image yet (nothing to match) keep the old free resize.
+  function getLockedAspectRatio(target) {
+    const frame = target.classList.contains("figure-frame") ? target : target.querySelector(".figure-frame");
+    if (!frame || !frame.classList.contains("has-image")) return null;
+    const img = frame.querySelector("img");
+    if (!img || !img.naturalWidth || !img.naturalHeight) return null;
+    return img.naturalWidth / img.naturalHeight;
+  }
+
   function wireResizeGrip(target, corner) {
     const skipHorizontalMargin = target.classList.contains("hero-figure");
     const grip = document.createElement("div");
@@ -488,12 +505,15 @@
     let startH = 0;
     let startML = 0;
     let startMT = 0;
+    let lockedRatio = null;
 
     function onMove(e) {
       const dx = e.clientX - startX;
       const dy = e.clientY - startY;
       const newW = Math.max(40, Math.round(startW + growSign * dx));
-      const newH = Math.max(24, Math.round(startH + growSign * dy));
+      const newH = lockedRatio
+        ? Math.max(24, Math.round(newW / lockedRatio))
+        : Math.max(24, Math.round(startH + growSign * dy));
       target.style.width = `${newW}px`;
       target.style.height = `${newH}px`;
       liftProseMaxWidth(target);
@@ -522,6 +542,7 @@
       startH = rect.height;
       startML = parseFloat(target.style.marginLeft || computed.marginLeft) || 0;
       startMT = parseFloat(target.style.marginTop || computed.marginTop) || 0;
+      lockedRatio = getLockedAspectRatio(target);
       grip.classList.add("is-dragging");
       document.addEventListener("pointermove", onMove);
       document.addEventListener("pointerup", onUp);
