@@ -343,7 +343,7 @@ button { font: inherit; background: none; border: none; cursor: pointer; color: 
 .hero-grid {
   display: flex;
   flex-wrap: nowrap;
-  gap: var(--sp-8);
+  gap: 0;
   align-items: center;
 }
 /* flex-basis is deliberately left auto (via the plain "width" property
@@ -357,10 +357,14 @@ button { font: inherit; background: none; border: none; cursor: pointer; color: 
 /* aspect-ratio only matters before .hero-figure has ever been dragged
    (no inline width/height yet): its .figure-frame child is width/height
    100% of it (see below), so with no inline size and no fallback shape
-   here it would collapse to 0 height. Matches .figure-frame's own
-   default aspect-ratio so an untouched hero figure looks the same as
-   before this became resizable at the .hero-figure level. */
-.hero-figure { flex: 1 1 auto; width: 30%; min-width: 0; aspect-ratio: 8 / 5; }
+   here it would collapse to 0 height. Set to the actual
+   hero-device-stack.jpg's own proportions (~1372x1349, nearly square)
+   rather than the generic 8:5 figure-frame default — object-fit:contain
+   letterboxes the image to whatever box it's given, and an 8:5 box
+   around a near-square image was wasting ~40% of the box as empty
+   padding above/below (or the sides, when a dragged inline size flips
+   which axis is the letterbox axis). */
+.hero-figure { flex: 1 1 auto; width: 30%; min-width: 0; aspect-ratio: 1372 / 1349; }
 .hero-eyebrow {
   font-family: var(--font-mono);
   font-size: var(--fs-xs);
@@ -388,7 +392,12 @@ button { font: inherit; background: none; border: none; cursor: pointer; color: 
   aspect-ratio: 1 / 1;
   min-width: 6rem;
 }
-.hero-intro { min-width: 0; }
+/* Without a floor here, .hero-avatar's flex-shrink:0 means it never gives
+   up any width under pressure — so any squeeze on .hero-content (e.g. from
+   growing .hero-figure) lands entirely on .hero-intro, which can otherwise
+   shrink token-thin and turn its paragraph into a tall, barely-readable
+   column instead of the two boxes shrinking together. */
+.hero-intro { min-width: 18rem; }
 @media (max-width: 640px) {
   .hero-identity { flex-direction: column; }
   .hero-avatar { width: calc(100% + 2 * var(--gutter)); margin-inline: calc(-1 * var(--gutter)); }
