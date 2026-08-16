@@ -391,7 +391,7 @@ button { font: inherit; background: none; border: none; cursor: pointer; color: 
 .hero-intro { min-width: 0; }
 @media (max-width: 640px) {
   .hero-identity { flex-direction: column; }
-  .hero-avatar .figure-frame { width: 9rem; }
+  .hero-avatar .figure-frame { width: 11rem; }
 }
 .hero-name {
   font-family: var(--font-serif);
@@ -402,7 +402,7 @@ button { font: inherit; background: none; border: none; cursor: pointer; color: 
   margin-top: var(--sp-4);
 }
 @media (max-width: 480px) {
-  .hero-avatar .figure-frame { width: 6rem; }
+  .hero-avatar .figure-frame { width: 8.5rem; }
 }
 .hero-tagline {
   font-family: var(--font-serif);
@@ -677,7 +677,7 @@ body.local-editing [data-edit] {
 @media (max-width: 980px) {
   .hero-grid { flex-direction: column; }
   .hero-content { flex-basis: auto; width: 100%; }
-  .hero-figure { flex-basis: auto; max-width: 20rem; margin: var(--sp-8) auto 0; opacity: 0.9; }
+  .hero-figure { flex-basis: auto; width: 100%; max-width: 28rem; margin: var(--sp-8) auto 0; }
 }
 
 /* ---------- 7. About ---------- */
