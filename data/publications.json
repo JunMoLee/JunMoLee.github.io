@@ -1,6 +1,15 @@
 [
   {
     "year": "2026",
+    "venue": "IEEE International Electron Devices Meeting",
+    "venueShort": "IEDM",
+    "title": "Logic-Compatible Capacitive Gain Cell Monolithically Integrated on Si CMOS for Bit-Cost-Scalable 3D Digital Compute-in-Memory",
+    "authors": "J. Lee, K. Lee, C. Zhang, T.-H. Kim, M. Tian, L. J.-C. Liu, M.-F. Chang, S. Datta, S. Yu",
+    "tags": [],
+    "url": "https://iedm26.mapyourshow.com/8_0/sessions/session-details.cfm?scheduleid=176"
+  },
+  {
+    "year": "2026",
     "venue": "IEEE Transactions on Electron Devices",
     "venueShort": "TED",
     "title": "Dual-Gated ALD Oxide-Channel Non-Volatile Capacitive Memory Monolithically Integrated on Foundry 40 nm CMOS for Capacitive Digital Compute-in-Memory",
@@ -119,14 +128,5 @@
     "authors": "S. Deng, J. Kwak, J. Lee, K. A. Aabrar, T.-H. Kim, S. Kirtania, G. Choe, C. Zhang, W. Li, O. Phadke, S. Yu, S. Datta",
     "tags": [],
     "url": "https://ieeexplore.ieee.org/document/10413838/"
-  },
-  {
-    "year": "2026",
-    "venue": "IEEE International Electron Devices Meeting",
-    "venueShort": "IEDM",
-    "title": "Logic-Compatible Capacitive Gain Cell Monolithically Integrated on Si CMOS for Bit-Cost-Scalable 3D Digital Compute-in-Memory",
-    "authors": "J. Lee, K. Lee, C. Zhang, T.-H. Kim, M. Tian, L. J.-C. Liu, M.-F. Chang, S. Datta, S. Yu",
-    "tags": [],
-    "url": "https://iedm26.mapyourshow.com/8_0/sessions/session-details.cfm?scheduleid=176"
   }
 ]
