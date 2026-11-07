@@ -5,7 +5,8 @@
     "place": "Hillsboro, Oregon",
     "period": "Aug 2026 – Nov 2026",
     "points": [
-      "Physics-based compact modeling of BEOL & Si backside metal layer parasitics and FEOL advanced logic transistors for 18A technology"
+      "Front-end-of-line transistor modeling and within-wafer variation anlaysis",
+      "Back-end-of-line resistance modeling at advanced nodes"
     ]
   },
   {
